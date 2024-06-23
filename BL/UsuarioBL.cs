@@ -10,7 +10,7 @@ namespace BL
 {
     public class UsuarioBL
     {
-        private UsuarioDA usuarioDA;
+        private readonly UsuarioDA usuarioDA;
 
         public UsuarioBL(DbAa96f3VentaropaContext context)
         {

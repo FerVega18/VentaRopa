@@ -1,15 +1,28 @@
+using BL;
+using Microsoft.EntityFrameworkCore;
+using Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configurar la cadena de conexión
+var connectionString = "Data Source=SQL8006.site4now.net;Initial Catalog=db_aa96f3_ventaropa;User Id=db_aa96f3_ventaropa_admin;Password=A*nvt46Fe-;";
+
+// Registrar el contexto de la base de datos
+builder.Services.AddDbContext<DbAa96f3VentaropaContext>(options =>
+    options.UseSqlServer(connectionString));
+
+// Registro de otros servicios
+builder.Services.AddScoped<UsuarioBL>();
+
+// Agregar controladores con vistas
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurar el pipeline de solicitudes HTTP
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

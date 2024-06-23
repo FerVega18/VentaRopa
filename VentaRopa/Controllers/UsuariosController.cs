@@ -15,7 +15,7 @@ namespace VentaRopa.Controllers
         }
 
         // GET: Usuarios/Create
-        public IActionResult Create()
+        public IActionResult Crear()
         {
             return View();
         }
@@ -23,7 +23,7 @@ namespace VentaRopa.Controllers
         // POST: Usuarios/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("NombreUsuario,Contraseña,RolId")] Usuario usuario)
+        public IActionResult Crear([Bind("NombreUsuario,Contraseña,RolId")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {

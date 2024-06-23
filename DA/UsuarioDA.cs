@@ -11,7 +11,7 @@ namespace DA
     public class UsuarioDA
     {
 
-        private DbAa96f3VentaropaContext _dbContext;
+        private readonly DbAa96f3VentaropaContext _dbContext;
 
         public UsuarioDA(DbAa96f3VentaropaContext dbContext)
         {
