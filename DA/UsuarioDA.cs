@@ -19,14 +19,19 @@ namespace DA
         }
 
 
-        public String Agregar(Usuario usuario)
+        public string Agregar(Usuario usuario)
         {
             try
             {
+                // Validar que el nombre de usuario no esté repetido
+                if (_dbContext.Usuarios.Any(u => u.NombreUsuario == usuario.NombreUsuario))
+                {
+                    throw new InvalidOperationException("El nombre de usuario ya está en uso.");
+                }
+
                 _dbContext.Usuarios.Add(usuario);
                 _dbContext.SaveChanges();
                 return usuario.NombreUsuario;
-
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 using BL;
+using DA;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -10,7 +11,8 @@ var connectionString = "Data Source=SQL8006.site4now.net;Initial Catalog=db_aa96
 // Registrar el contexto de la base de datos
 builder.Services.AddDbContext<DbAa96f3VentaropaContext>(options =>
     options.UseSqlServer(connectionString));
-
+builder.Services.AddScoped<UsuarioBL>();
+builder.Services.AddScoped<UsuarioDA>();
 // Registro de otros servicios
 builder.Services.AddScoped<UsuarioBL>();
 

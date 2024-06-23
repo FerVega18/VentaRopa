@@ -14,16 +14,16 @@ namespace VentaRopa.Controllers
             _usuarioBL = usuarioBL;
         }
 
-        // GET: Usuarios/Create
+        // GET: Usuarios/Crear
         public IActionResult Crear()
         {
             return View();
         }
 
-        // POST: Usuarios/Create
+        // POST: Usuarios/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Crear([Bind("NombreUsuario,Contraseña,RolId")] Usuario usuario)
+        public IActionResult Crear(Usuario usuario)
         {
             if (ModelState.IsValid)
             {
@@ -32,9 +32,13 @@ namespace VentaRopa.Controllers
                     _usuarioBL.Agregar(usuario);
                     return RedirectToAction(nameof(Index));
                 }
+                catch (InvalidOperationException ex) // Capturar la excepción específica
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message); // Agregar mensaje de error a ModelState
+                }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, "Ocurrió un error al crear el usuario: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "Error al intentar registrar el usuario: " + ex.Message);
                 }
             }
             return View(usuario);
