@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Models.Producto>
+
+@{
+    ViewData["Title"] = "Lista de Productos";
+}
+
+<h1>Lista de Productos</h1>
+
+<div class="container">
+    <div class="row">
+        @foreach (var producto in Model)
+        {
+            <div class="col-md-3 col-sm-6">
+                <div class="card mb-4 shadow-sm">
+                    <a asp-action="Details" asp-route-id="@producto.ProductoId">
+                        <img src="@producto.Imagen" class="card-img-top" alt="@producto.Descripcion" />
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">@producto.Descripcion</h5>
+                        <p class="card-text">Precio: $@producto.Precio</p>
+                        <a asp-action="Details" asp-route-id="@producto.ProductoId" class="btn btn-primary">Ver Detalles</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
