@@ -21,7 +21,7 @@ public partial class Producto
 
     public int? Stock { get; set; }
 
-    public virtual Categorium? Categoria { get; set; }
+    public virtual Categoria? Categoria { get; set; }
 
     public virtual ICollection<DetallesOrden> DetallesOrdens { get; set; } = new List<DetallesOrden>();
 }

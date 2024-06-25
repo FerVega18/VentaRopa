@@ -15,7 +15,7 @@ public partial class DbAa96f3VentaropaContext : DbContext
     {
     }
 
-    public virtual DbSet<Categorium> Categoria { get; set; }
+    public virtual DbSet<Categoria> Categoria { get; set; }
 
     public virtual DbSet<Cliente> Clientes { get; set; }
 
@@ -43,7 +43,7 @@ public partial class DbAa96f3VentaropaContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Categorium>(entity =>
+        modelBuilder.Entity<Categoria>(entity =>
         {
             entity.HasKey(e => e.CategoriaId).HasName("PK__CATEGORI__6378C0202EA6AAC8");
 

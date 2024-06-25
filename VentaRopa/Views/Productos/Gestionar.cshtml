@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Models.Producto>
+
+@{
+    ViewData["Title"] = "Gestionar Productos";
+}
+
+<h1>Gestionar Productos</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var producto in Model)
+        {
+            <tr>
+                <td>
+                    <img src="@producto.Imagen" alt="@producto.Descripcion" style="width: 100px; height: auto;" />
+                </td>
+                <td>@producto.Descripcion</td>
+                <td>@producto.Precio</td>
+                <td>
+                    <a asp-action="Editar" asp-route-id="@producto.ProductoId" class="btn btn-warning">Editar</a>
+                    <form asp-action="Eliminar" asp-route-id="@producto.ProductoId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar este producto: @producto.Descripcion ?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

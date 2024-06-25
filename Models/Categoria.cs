@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Models;
 
-public partial class Categorium
+public partial class Categoria
 {
     public int CategoriaId { get; set; }
 
