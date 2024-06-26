@@ -4,14 +4,12 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BL
 {
     public class CategoriasBL
     {
-
         private CategoriasDA categoriasDA;
 
         public CategoriasBL(DbAa96f3VentaropaContext context)
@@ -19,66 +17,64 @@ namespace BL
             categoriasDA = new CategoriasDA(context);
         }
 
-        public List<Categoria> ObtenerTodos()
+        public async Task<List<Categoria>> ObtenerTodos()
         {
             try
             {
-                return categoriasDA.ObtenerTodos();
-
+                return await categoriasDA.ObtenerTodos();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener todas las categorías: " + ex.Message);
             }
         }
 
-        public Categoria ObtenerPorId(int id)
+        public async Task<Categoria> ObtenerPorId(int id)
         {
             try
             {
-                return categoriasDA.ObtenerPorId(id);
+                return await categoriasDA.ObtenerPorId(id);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener la categoría por ID: " + ex.Message);
             }
         }
 
-        public int Agregar(Categoria categoria)
+        public async Task<int> Agregar(Categoria categoria)
         {
             try
             {
-                return categoriasDA.Agregar(categoria);
+                return await categoriasDA.Agregar(categoria);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al agregar la categoría: " + ex.Message);
             }
         }
-        public int Actualizar(int id, Categoria categoria)
+
+        public async Task<int> Actualizar(int id, Categoria categoria)
         {
             try
             {
-                return categoriasDA.Actualizar(id, categoria);
+                return await categoriasDA.Actualizar(id, categoria);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al actualizar la categoría: " + ex.Message);
             }
         }
 
-        public void Eliminar(int id)
+        public async Task Eliminar(int id)
         {
             try
             {
-                categoriasDA.Eliminar(id);
+                await categoriasDA.Eliminar(id);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al eliminar la categoría: " + ex.Message);
             }
         }
-
-
     }
 }

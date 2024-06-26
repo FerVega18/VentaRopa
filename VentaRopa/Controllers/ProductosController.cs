@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BL;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using System.IO;
@@ -8,17 +9,19 @@ namespace VentaRopa.Controllers
 {
     public class ProductosController : Controller
     {
-        private readonly DbAa96f3VentaropaContext _dbContext;
+        private ProductosBL _productosBL;
+        private CategoriasBL _categoriasBL;
 
-        public ProductosController(DbAa96f3VentaropaContext dbContext)
+        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL)
         {
-            _dbContext = dbContext;
+            _productosBL = productosBL;
+            _categoriasBL = categoriasBL;
         }
 
         [HttpGet]
         public async Task<IActionResult> Agregar()
         {
-            ViewData["Categorias"] = await _dbContext.Categoria.ToListAsync();
+            ViewData["Categorias"] = await _categoriasBL.ObtenerTodos();
             return View();
         }
 
@@ -45,45 +48,44 @@ namespace VentaRopa.Controllers
                     producto.Imagen = "/Imagenes/" + uniqueFileName;
                 }
 
-                _dbContext.Productos.Add(producto);
-                await _dbContext.SaveChangesAsync();
+                await _productosBL.Agregar(producto);
                 return RedirectToAction(nameof(Lista));
             }
-            ViewData["Categorias"] = await _dbContext.Categoria.ToListAsync();
+            ViewData["Categorias"] = await _categoriasBL.ObtenerTodos();
             return View(producto);
         }
 
         public async Task<IActionResult> Lista()
         {
-            var productos = await _dbContext.Productos.ToListAsync();
+            var productos = await _productosBL.ObtenerTodos();
             return View(productos);
         }
 
         // Método para mostrar detalles de un producto
-        public async Task<IActionResult> Details(int id)
-        {
-            var producto = await _dbContext.Productos
-                .FirstOrDefaultAsync(m => m.ProductoId == id);
+        //public async Task<IActionResult> Details(int id)
+        //{
+        //    var producto = await _dbContext.Productos
+        //        .FirstOrDefaultAsync(m => m.ProductoId == id);
 
-            if (producto == null)
-            {
-                return NotFound();
-            }
+        //    if (producto == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(producto);
-        }
+        //    return View(producto);
+        //}
 
 
 
         [HttpGet]
         public async Task<IActionResult> Editar(int id)
         {
-            var producto = await _dbContext.Productos.FindAsync(id);
+            var producto = await _productosBL.obtenerPorId(id);
             if (producto == null)
             {
                 return NotFound();
             }
-            ViewData["Categorias"] = await _dbContext.Categoria.ToListAsync();
+            ViewData["Categorias"] =  await _categoriasBL.ObtenerTodos();
             return View(producto);
         }
 
@@ -117,12 +119,11 @@ namespace VentaRopa.Controllers
                         producto.Imagen = "/Imagenes/" + uniqueFileName;
                     }
 
-                    _dbContext.Update(producto);
-                    await _dbContext.SaveChangesAsync();
+                    await _productosBL.Actualizar(id,producto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductoExiste(producto.ProductoId))
+                    if (_productosBL.obtenerPorId(id) != null)
                     {
                         return NotFound();
                     }
@@ -133,34 +134,49 @@ namespace VentaRopa.Controllers
                 }
                 return RedirectToAction(nameof(Gestionar));
             }
-            ViewData["Categorias"] = await _dbContext.Categoria.ToListAsync();
+            ViewData["Categorias"] = await  _categoriasBL.ObtenerTodos();
             return View(producto);
         }
 
         [HttpPost]
         public async Task<IActionResult> Eliminar(int id)
         {
-            var producto = await _dbContext.Productos.FindAsync(id);
+            var producto = await _productosBL.obtenerPorId(id);
             if (producto == null)
             {
                 return NotFound();
             }
 
-            _dbContext.Productos.Remove(producto);
-            await _dbContext.SaveChangesAsync();
+            await _productosBL.Eliminar(id);
             return RedirectToAction(nameof(Gestionar));
         }
 
-        private bool ProductoExiste(int id)
-        {
-            return _dbContext.Productos.Any(e => e.ProductoId == id);
-        }
 
-        public async Task<IActionResult> Gestionar()
+        public async Task<IActionResult> Gestionar(string searchQuery)
         {
-            var productos = await _dbContext.Productos.ToListAsync();
-            return View(productos);
+            try
+            {
+                var productos = await _productosBL.ObtenerTodos(); // Utiliza el método de ProductosBL para obtener todos los productos
+
+                if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    searchQuery = searchQuery.ToLower(); // Convertir la consulta a minúsculas para comparación sin distinción de casos
+
+                    productos = productos.Where(p =>
+                        p.Descripcion.ToLower().Contains(searchQuery) ||
+                        p.ProductoId.ToString().Contains(searchQuery) // No afectado por distinción de mayúsculas/minúsculas
+                    ).ToList();
+                }
+
+                return View(productos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error al gestionar productos: " + ex.Message);
+            }
         }
 
     }
+
 }
+

@@ -3,40 +3,53 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using BL;
 
 namespace VentaRopa.Controllers
 {
     public class CategoriasController : Controller
     {
-        private readonly DbAa96f3VentaropaContext _dbContext;
+        private readonly CategoriasBL _categoriasBL;
 
-        public CategoriasController(DbAa96f3VentaropaContext dbContext)
+        public CategoriasController(CategoriasBL categoriasBL)
         {
-            _dbContext = dbContext;
+            _categoriasBL = categoriasBL;
         }
 
-        // Método para listar categorías
         public async Task<IActionResult> Index()
         {
-            var categorias = await _dbContext.Categoria.ToListAsync();
+            var categorias = await _categoriasBL.ObtenerTodos();
             return View(categorias);
         }
 
-        // Método para la vista de crear una nueva categoría
+        [HttpGet]
         public IActionResult Agregar()
         {
             return View();
         }
 
-        // Método para la vista de editar una categoría existente
-        public async Task<IActionResult> Editar(int? id)
+        [HttpPost]
+        public async Task<IActionResult> Agregar([Bind("Descripcion")] Categoria categoria)
         {
-            if (id == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                try
+                {
+                    await _categoriasBL.Agregar(categoria);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error al agregar la categoría: " + ex.Message);
+                }
             }
+            return View(categoria);
+        }
 
-            var categoria = await _dbContext.Categoria.FindAsync(id);
+        [HttpGet]
+        public async Task<IActionResult> Editar(int id)
+        {
+            var categoria = await _categoriasBL.ObtenerPorId(id);
             if (categoria == null)
             {
                 return NotFound();
@@ -44,9 +57,7 @@ namespace VentaRopa.Controllers
             return View(categoria);
         }
 
-        // Método para manejar la edición de una categoría existente
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(int id, [Bind("CategoriaId,Descripcion")] Categoria categoria)
         {
             if (id != categoria.CategoriaId)
@@ -58,74 +69,30 @@ namespace VentaRopa.Controllers
             {
                 try
                 {
-                    _dbContext.Update(categoria);
-                    await _dbContext.SaveChangesAsync();
+                    await _categoriasBL.Actualizar(id, categoria);
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!CategoriaExiste(categoria.CategoriaId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError("", "Error al editar la categoría: " + ex.Message);
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(categoria);
         }
 
-        // Método para confirmar la eliminación de una categoría
-        public async Task<IActionResult> Eliminar(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var categoria = await _dbContext.Categoria
-                .FirstOrDefaultAsync(m => m.CategoriaId == id);
-            if (categoria == null)
-            {
-                return NotFound();
-            }
-
-            return View(categoria);
-        }
-
-        // Método para manejar la eliminación de una categoría
-        [HttpPost, ActionName("Eliminar")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ConfirmarEliminar(int id)
-        {
-            var categoria = await _dbContext.Categoria.FindAsync(id);
-            _dbContext.Categoria.Remove(categoria);
-            await _dbContext.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-
-        // Método para manejar la creación de una nueva categoría
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Agregar([Bind("CategoriaId,Descripcion")] Categoria categoria)
+        public async Task<IActionResult> Eliminar(int id)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _dbContext.Add(categoria);
-                await _dbContext.SaveChangesAsync();
+                await _categoriasBL.Eliminar(id);
                 return RedirectToAction(nameof(Index));
             }
-            return View(categoria);
-        }
-
-       
-
-        private bool CategoriaExiste(int id)
-        {
-            return _dbContext.Categoria.Any(e => e.CategoriaId == id);
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al eliminar la categoría: " + ex.Message);
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

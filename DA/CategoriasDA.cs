@@ -1,93 +1,97 @@
 ﻿using Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Linq.Dynamic.Core;
 
 namespace DA
 {
     public class CategoriasDA
     {
-        private DbAa96f3VentaropaContext _dbContext;
+        private readonly DbAa96f3VentaropaContext _dbContext;
 
         public CategoriasDA(DbAa96f3VentaropaContext dbContext)
         {
-            _dbContext = dbContext; 
+            _dbContext = dbContext;
         }
 
-        public List<Categoria> ObtenerTodos()
+        public async Task<List<Categoria>> ObtenerTodos()
         {
             try
             {
-                return _dbContext.Categoria.ToList();
-                   
+                return await _dbContext.Categoria.ToListAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener todas las categorías: " + ex.Message);
             }
         }
 
-        public Categoria ObtenerPorId(int id)
+        public async Task<Categoria> ObtenerPorId(int id)
         {
             try
             {
-                return _dbContext.Categoria.FirstOrDefault(c => c.CategoriaId == id);
+                return await _dbContext.Categoria.FirstOrDefaultAsync(c => c.CategoriaId == id);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener la categoría por ID: " + ex.Message);
             }
         }
 
-        public int Agregar(Categoria categoria)
+        public async Task<int> Agregar(Categoria categoria)
         {
             try
             {
-                _dbContext.Categoria.Add(categoria);
-                _dbContext.SaveChanges();
+                await _dbContext.Categoria.AddAsync(categoria);
+                await _dbContext.SaveChangesAsync();
                 return categoria.CategoriaId;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al agregar la categoría: " + ex.Message);
             }
         }
 
-        public int Actualizar(int id, Categoria categoria)
+        public async Task<int> Actualizar(int id, Categoria categoria)
         {
             try
             {
-                Categoria categoriaExistente = ObtenerPorId(id);
-                categoriaExistente.Descripcion = categoria.Descripcion;
-                _dbContext.Categoria.Update(categoria);
-                _dbContext.SaveChanges();
-                return categoria.CategoriaId;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public void Eliminar(int id)
-        {
-            try
-            {
-                var categoria = _dbContext.Categoria.FirstOrDefault(c => c.CategoriaId == id);
-                if (categoria != null)
+                Categoria categoriaExistente = await ObtenerPorId(id);
+                if (categoriaExistente != null)
                 {
-                    _dbContext.Categoria.Remove(categoria);
-                    _dbContext.SaveChanges();
+                    categoriaExistente.Descripcion = categoria.Descripcion;
+                    _dbContext.Categoria.Update(categoriaExistente);
+                    await _dbContext.SaveChangesAsync();
+                    return categoriaExistente.CategoriaId;
+                }
+                else
+                {
+                    throw new Exception("Categoría no encontrada para actualizar");
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al actualizar la categoría: " + ex.Message);
             }
         }
 
+        public async Task Eliminar(int id)
+        {
+            try
+            {
+                var categoria = await _dbContext.Categoria.FirstOrDefaultAsync(c => c.CategoriaId == id);
+                if (categoria != null)
+                {
+                    _dbContext.Categoria.Remove(categoria);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar la categoría: " + ex.Message);
+            }
+        }
     }
 }

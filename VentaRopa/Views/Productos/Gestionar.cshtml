@@ -6,6 +6,14 @@
 
 <h1>Gestionar Productos</h1>
 
+<form method="get" asp-action="Gestionar">
+    <div class="form-group">
+        <label for="searchQuery">Buscar Producto:</label>
+        <input type="text" id="searchQuery" name="searchQuery" class="form-control" placeholder="Ingrese nombre o código del producto" value="@ViewData["searchQuery"]" />
+    </div>
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>

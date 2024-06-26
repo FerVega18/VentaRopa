@@ -16,6 +16,8 @@ builder.Services.AddDbContext<DbAa96f3VentaropaContext>(options =>
 // Registro de otros servicios
 builder.Services.AddScoped<UsuarioBL>();
 builder.Services.AddScoped<UsuarioDA>();
+builder.Services.AddScoped<ProductosBL>();
+builder.Services.AddScoped<CategoriasBL>();
 
 // Agregar controladores con vistas
 builder.Services.AddControllersWithViews();

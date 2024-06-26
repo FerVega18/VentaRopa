@@ -1,10 +1,10 @@
 ﻿using Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
 
 namespace DA
 {
@@ -17,52 +17,49 @@ namespace DA
             _dbContext = dbContext;
         }
 
-        public List<Producto> ObtenerTodos()
+        public async Task<List<Producto>> ObtenerTodos()
         {
             try
             {
-                return _dbContext.Productos.ToList();
+                return await _dbContext.Productos.ToListAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener todos los productos: " + ex.Message);
             }
         }
 
-        public List<Producto> ObtenerFiltrados(string filtro)
+        public async Task<List<Producto>> ObtenerFiltrados(string filtro)
         {
             try
             {
-                return _dbContext.Productos.Where(filtro).ToList();
+                return await _dbContext.Productos.Where(filtro).ToListAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener productos filtrados: " + ex.Message);
             }
         }
 
-        public Dictionary<int, int> ObtenerPopularidadProductos()
+        public async Task<Dictionary<int, int>> ObtenerPopularidadProductos()
         {
             try
             {
                 var popularidad = new Dictionary<int, int>();
 
-                var detallesOrden = _dbContext.DetallesOrdens.ToList();
+                var detallesOrden = await _dbContext.DetallesOrdens.ToListAsync();
 
                 foreach (var detalle in detallesOrden)
                 {
                     if (popularidad.ContainsKey(detalle.ProductoId))
                     {
-
-                        if (detalle.Cantidad.HasValue)//Verificar si detalle.Canntidad tiene valor
+                        if (detalle.Cantidad.HasValue)
                         {
-                            //Obtenemos ese valor entero y lo sumamos o asignamos.
                             popularidad[detalle.ProductoId] += detalle.Cantidad.Value;
                         }
                     }
                     else
                     {
-                        // Asignar la cantidad solo si detalle.Cantidad tiene un valor
                         if (detalle.Cantidad.HasValue)
                         {
                             popularidad[detalle.ProductoId] = detalle.Cantidad.Value;
@@ -78,97 +75,94 @@ namespace DA
             }
         }
 
-        public Producto ObtenerPorId(int id)
+        public async Task<Producto> ObtenerPorId(int id)
         {
             try
             {
-                return _dbContext.Productos.FirstOrDefault(p => p.ProductoId == id);
+                return await _dbContext.Productos.FirstOrDefaultAsync(p => p.ProductoId == id);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener el producto por ID: " + ex.Message);
             }
         }
 
-        public int Agregar(Producto producto)
+        public async Task<int> Agregar(Producto producto)
         {
             try
             {
                 _dbContext.Productos.Add(producto);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
                 return producto.ProductoId;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al agregar el producto: " + ex.Message);
             }
         }
 
-        public int Actualizar(int id, Producto producto)
+        public async Task<int> Actualizar(int id, Producto producto)
         {
             try
             {
-                Producto productoExistente = ObtenerPorId(id);
-                productoExistente.CategoriaId = producto.CategoriaId;
-                productoExistente.Descripcion = producto.Descripcion;
-                productoExistente.Talla = producto.Talla;
-                productoExistente.Precio = producto.Precio;
-                productoExistente.Imagen = producto.Imagen;
-                productoExistente.Stock = producto.Stock;
-                _dbContext.Productos.Update(producto);
-                _dbContext.SaveChanges();
+                Producto productoExistente = await ObtenerPorId(id);
+                if (productoExistente != null)
+                {
+                    productoExistente.CategoriaId = producto.CategoriaId;
+                    productoExistente.Descripcion = producto.Descripcion;
+                    productoExistente.Talla = producto.Talla;
+                    productoExistente.Precio = producto.Precio;
+                    productoExistente.Imagen = producto.Imagen;
+                    productoExistente.Stock = producto.Stock;
+
+                    await _dbContext.SaveChangesAsync();
+                }
                 return producto.ProductoId;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al actualizar el producto: " + ex.Message);
             }
         }
 
-        public void Eliminar(int id)
+        public async Task Eliminar(int id)
         {
             try
             {
-                var producto = _dbContext.Productos.FirstOrDefault(p => p.ProductoId == id);
+                var producto = await _dbContext.Productos.FirstOrDefaultAsync(p => p.ProductoId == id);
                 if (producto != null)
                 {
                     _dbContext.Productos.Remove(producto);
-                    _dbContext.SaveChanges();
-
+                    await _dbContext.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al eliminar el producto: " + ex.Message);
             }
-
         }
 
-        public List<Producto> BuscarPorNombre(string Nombre)
+        public async Task<List<Producto>> BuscarPorNombre(string nombre)
         {
             try
             {
-                return _dbContext.Productos.Where(p => p.Descripcion.Contains(Nombre)).ToList();
+                return await _dbContext.Productos
+                    .Where(p => p.Descripcion.ToLower().Contains(nombre.ToLower()))
+                    .ToListAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al buscar productos por nombre: " + ex.Message);
             }
         }
 
+      
 
-        public List<Producto> BuscarPorCodigo(int codigo)
-        {
-            try
-            {
-                return _dbContext.Productos.Where(p => p.ProductoId == codigo).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
+      
+
 
 
     }
 }
+
+

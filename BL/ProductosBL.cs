@@ -17,11 +17,11 @@ namespace BL
             productosDA = new ProductosDA(context);
         }
 
-        public List<Producto> ObtenerTodos()
+        public async Task<List<Producto>> ObtenerTodos()
         {
             try
             {
-                return productosDA.ObtenerTodos();
+                return await productosDA.ObtenerTodos();
             }
             catch (Exception error)
             {
@@ -30,11 +30,11 @@ namespace BL
         }
 
 
-        public Producto obtenerPorId(int id)
+        public async Task<Producto> obtenerPorId(int id)
         {
             try
             {
-                return productosDA.ObtenerPorId(id);
+                return await productosDA.ObtenerPorId(id);
             }
             catch (Exception error)
             {
@@ -42,11 +42,11 @@ namespace BL
             }
         }
 
-        public void Agregar(Producto producto)
+        public async Task Agregar(Producto producto)
         {
             try
             {
-                productosDA.Agregar(producto);
+                await productosDA.Agregar(producto);
             }
             catch (Exception error)
             {
@@ -54,13 +54,13 @@ namespace BL
             }
         }
 
-        public int Actualizar(int id, Producto producto)
+        public async Task<int> Actualizar(int id, Producto producto)
         {
 
             try
             {
 
-                return productosDA.Actualizar(id, producto);
+                return await productosDA.Actualizar(id, producto);
             }
             catch (Exception error)
             {
@@ -68,11 +68,11 @@ namespace BL
             }
         }
 
-        public void Eliminar(int id)
+        public async Task Eliminar(int id)
         {
             try
             {
-                productosDA.Eliminar(id);
+                await productosDA.Eliminar(id);
             }
             catch (Exception error)
             {
@@ -80,28 +80,25 @@ namespace BL
             }
         }
 
-        public List<Producto> BuscarPorNombre(string nombre)
+        public async Task<List<Producto>> BuscarPorNombre(string nombre)
         {
             try
             {
-                return productosDA.BuscarPorNombre(nombre);
+                return await productosDA.BuscarPorNombre(nombre);
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        public List<Producto> BuscarPorCodigo(int codigo)
-        {
-            return productosDA.BuscarPorCodigo(codigo);
-        }
+        
 
 
-        public List<Producto> ObtenerTodosOrdenados(string orderBy)
+        public async Task<List<Producto>> ObtenerTodosOrdenados(string orderBy)
         {
             try
             {
-                var productos = productosDA.ObtenerTodos();
+                var productos = await productosDA.ObtenerTodos(); // Esperar la tarea asincrónica
 
                 switch (orderBy?.ToLower())
                 {
@@ -112,7 +109,7 @@ namespace BL
                     case "masreciente":
                         return productos.OrderByDescending(p => p.ProductoId).ToList(); // Suponiendo que ProductoID es un proxy de fecha de creación
                     case "maspopular":
-                        var popularidad = productosDA.ObtenerPopularidadProductos();
+                        var popularidad = await productosDA.ObtenerPopularidadProductos(); // Esperar la tarea asincrónica
                         return productos.OrderByDescending(p => popularidad.ContainsKey(p.ProductoId) ? popularidad[p.ProductoId] : 0).ToList();
                     default:
                         return productos.ToList();
@@ -129,6 +126,8 @@ namespace BL
                 throw new Exception("Ocurrió un error inesperado: " + ex.Message);
             }
         }
+
+        
 
 
 
