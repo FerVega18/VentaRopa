@@ -1,28 +1,25 @@
-﻿using Models;
-using DA;
+﻿using DA;
+using Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BL
 {
     public class UsuarioBL
     {
-        private readonly UsuarioDA usuarioDA;
+        private UsuarioDA usuarioDA;
 
         public UsuarioBL(DbAa96f3VentaropaContext context)
         {
             usuarioDA = new UsuarioDA(context);
         }
 
-        public String Agregar(Usuario usuario)
+        public string Agregar(Usuario usuario)
         {
             try
             {
                 return usuarioDA.Agregar(usuario);
-
             }
             catch (Exception ex)
             {
@@ -30,11 +27,11 @@ namespace BL
             }
         }
 
-        public Usuario ObtenerUsuario(string nombreUsuario, string contraseña)
+        public Usuario ObtenerUsuario(string nombreUsuario, string contrasena)
         {
             try
             {
-                return usuarioDA.ObtenerUsuario(nombreUsuario, contraseña);
+                return usuarioDA.ObtenerUsuario(nombreUsuario, contrasena);
             }
             catch (Exception ex)
             {
@@ -50,10 +47,8 @@ namespace BL
             }
             catch (Exception ex)
             {
-
-                throw new Exception("Error en UsuarioBL al obtener todos los usuarios: " + ex.Message);
+                throw new Exception(ex.Message);
             }
         }
-
     }
 }

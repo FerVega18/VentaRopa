@@ -1,12 +1,12 @@
 ﻿@model Models.Usuario
 
 @{
-    ViewData["Title"] = "Crear una cuenta";
+    ViewData["Title"] = "Iniciar sesión";
 }
 
-<h2>Crear una cuenta</h2>
+<h2>Iniciar sesión</h2>
 
-<form asp-action="Crear">
+<form asp-action="Login">
     <div class="form-group">
         <label asp-for="NombreUsuario" class="control-label"></label>
         <input asp-for="NombreUsuario" class="form-control" />
@@ -17,9 +17,9 @@
         <input asp-for="Contraseña" type="password" class="form-control" />
         <span asp-validation-for="Contraseña" class="text-danger"></span>
     </div>
-    
+
     <div class="form-group">
-        <input type="submit" value="Crear" class="btn btn-primary" />
+        <input type="submit" value="Iniciar sesión" class="btn btn-primary" />
     </div>
     @if (!ViewData.ModelState.IsValid)
     {
@@ -30,8 +30,8 @@
 </form>
 
 <div>
-    <a>¿Ya tienes una cuenta?</a>
-    <a asp-action="Login">Inicia sesión</a>
+    <a>¿No tienes una cuenta?</a>
+    <a asp-action="Crear">Crea una cuenta</a>
 </div>
 
 @section Scripts {
@@ -39,3 +39,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
