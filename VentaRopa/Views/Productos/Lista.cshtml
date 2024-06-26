@@ -1,6 +1,5 @@
 ﻿@model IEnumerable<Models.Producto>
 
-
 @{
     ViewData["Title"] = "Lista de Productos";
 }
@@ -19,6 +18,10 @@
                     <div class="card-body">
                         <h5 class="card-title">@producto.Descripcion</h5>
                         <p class="card-text">Precio: @producto.Precio</p>
+                        <form method="post" asp-action="AgregarAlCarrito" asp-controller="Productos">
+                            <input type="hidden" name="productoId" value="@producto.ProductoId" />
+                            <button type="submit" class="btn btn-success">Agregar al Carrito</button>
+                        </form>
                         <a asp-action="Details" asp-route-id="@producto.ProductoId" class="btn btn-primary">Ver Detalles</a>
                     </div>
                 </div>
@@ -26,7 +29,6 @@
         }
     </div>
 </div>
-
 
 <style>
     .card {
@@ -52,6 +54,7 @@
         margin-bottom: 10px; /* Espaciado entre elementos */
     }
 </style>
+
 <div class="text-center">
     <a asp-action="Carrito" asp-controller="Productos" class="btn btn-success">Ver Carrito</a>
 </div>
@@ -61,4 +64,5 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
 
