@@ -189,7 +189,8 @@ namespace VentaRopa.Controllers
             return RedirectToAction("Lista"); // Redirige a la página de inicio o a donde prefieras
         }
 
-        public IActionResult Ver()
+     
+        public IActionResult Carrito()
         {
             var session = _httpContextAccessor.HttpContext.Session;
             var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
