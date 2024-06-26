@@ -11,7 +11,7 @@
     <div class="card-body">
         <p class="card-text"><strong>Marca:</strong> @Model.Marca</p>
         <p class="card-text"><strong>Talla:</strong> @Model.Talla</p>
-        <p class="card-text"><strong>Precio:</strong> $@Model.Precio</p>
+        <p class="card-text"><strong>Precio:</strong> ₡ @Model.Precio</p>
 
         <div class="d-flex justify-content-between">
             <a asp-action="Lista" class="btn btn-secondary">Volver</a>
@@ -22,6 +22,14 @@
         </div>
     </div>
 </div>
+
+<style>
+    .card-img-top {
+        width: 100%;
+        height: 300px; 
+        object-fit: contain; 
+    }
+</style>
 
 @section Scripts {
     @{

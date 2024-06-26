@@ -90,7 +90,7 @@ namespace DA
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar la categoría: " + ex.Message);
+                throw new Exception("Error al eliminar la categoría en el acceso a datos: " + ex.Message);
             }
         }
     }

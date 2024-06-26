@@ -199,31 +199,39 @@ namespace VentaRopa.Controllers
             }
         }
 
-        public IActionResult AgregarAlCarrito(int productoId)
+        public IActionResult AgregarAlCarrito(int productoId, int cantidad = 1)
         {
             var session = _httpContextAccessor.HttpContext.Session;
-            var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
-            carrito.Add(productoId);
+            var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
+
+            if (carrito.ContainsKey(productoId))
+            {
+                carrito[productoId] += cantidad;
+            }
+            else
+            {
+                carrito[productoId] = cantidad;
+            }
+
             session.SetObjectAsJson("Carrito", carrito);
 
-            return RedirectToAction("Lista"); 
+            return RedirectToAction("Lista");
         }
-
 
 
         public async Task<IActionResult> Carrito()
         {
             var session = _httpContextAccessor.HttpContext.Session;
-            var carritoIds = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
+            var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
 
-            var productosCarrito = new List<Producto>();
+            var productosCarrito = new List<(Producto producto, int cantidad)>();
 
-            foreach (var id in carritoIds)
+            foreach (var item in carrito)
             {
-                var producto = await _productosBL.obtenerPorId(id);
+                var producto = await _productosBL.obtenerPorId(item.Key);
                 if (producto != null)
                 {
-                    productosCarrito.Add(producto);
+                    productosCarrito.Add((producto, item.Value));
                 }
             }
 
@@ -235,9 +243,9 @@ namespace VentaRopa.Controllers
         public IActionResult EliminarDelCarrito(int productoId)
         {
             var session = _httpContextAccessor.HttpContext.Session;
-            var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
+            var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
 
-            if (carrito.Contains(productoId))
+            if (carrito.ContainsKey(productoId))
             {
                 carrito.Remove(productoId);
                 session.SetObjectAsJson("Carrito", carrito);
@@ -246,7 +254,29 @@ namespace VentaRopa.Controllers
             return RedirectToAction("Carrito");
         }
 
-        
+        [HttpPost]
+        public IActionResult ActualizarCantidad(int productoId, int cantidad)
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
+
+            if (carrito.ContainsKey(productoId))
+            {
+                if (cantidad > 0)
+                {
+                    carrito[productoId] = cantidad;
+                }
+                else
+                {
+                    carrito.Remove(productoId);
+                }
+
+                session.SetObjectAsJson("Carrito", carrito);
+            }
+
+            return RedirectToAction("Carrito");
+        }
+
 
 
 

@@ -29,7 +29,7 @@
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">@producto.Descripcion</h5>
-                        <p class="card-text">Precio: @producto.Precio</p>
+                        <p class="card-text">Precio: ₡ @producto.Precio</p>
                         <form method="post" asp-action="AgregarAlCarrito" asp-controller="Productos">
                             <input type="hidden" name="productoId" value="@producto.ProductoId" />
                             <button type="submit" class="btn btn-success">Agregar al Carrito</button>
