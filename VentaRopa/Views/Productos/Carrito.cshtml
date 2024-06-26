@@ -27,8 +27,9 @@
                 <td>
                     <form asp-action="EliminarDelCarrito" method="post" style="display:inline;">
                         <input type="hidden" name="productoId" value="@producto.ProductoId" />
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar este producto del carrito: @producto.Descripcion ?');">Eliminar</button>
                     </form>
+                    
                 </td>
             </tr>
         }

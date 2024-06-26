@@ -59,9 +59,29 @@ namespace VentaRopa.Controllers
             return View(producto);
         }
 
-        public async Task<IActionResult> Lista()
+        public async Task<IActionResult> Lista(string sortOrder)
         {
             var productos = await _productosBL.ObtenerTodos();
+
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    productos = productos.OrderBy(p => p.Precio).ToList();
+                    break;
+                case "price_desc":
+                    productos = productos.OrderByDescending(p => p.Precio).ToList();
+                    break;
+                case "recent":
+                    productos = productos.OrderByDescending(p => p.ProductoId).ToList(); // Ordenar por ID en orden descendente
+                    break;
+                //case "popular":
+                //    productos = productos.OrderByDescending(p => p.Popularidad).ToList(); // Asumiendo que tienes una propiedad Popularidad
+                //    break;
+                default:
+                    productos = productos.OrderBy(p => p.Descripcion).ToList(); // Orden por defecto
+                    break;
+            }
+
             return View(productos);
         }
 
@@ -186,16 +206,50 @@ namespace VentaRopa.Controllers
             carrito.Add(productoId);
             session.SetObjectAsJson("Carrito", carrito);
 
-            return RedirectToAction("Lista"); // Redirige a la página de inicio o a donde prefieras
+            return RedirectToAction("Lista"); 
         }
 
-     
-        public IActionResult Carrito()
+
+
+        public async Task<IActionResult> Carrito()
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            var carritoIds = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
+
+            var productosCarrito = new List<Producto>();
+
+            foreach (var id in carritoIds)
+            {
+                var producto = await _productosBL.obtenerPorId(id);
+                if (producto != null)
+                {
+                    productosCarrito.Add(producto);
+                }
+            }
+
+            return View(productosCarrito);
+        }
+
+
+        [HttpPost]
+        public IActionResult EliminarDelCarrito(int productoId)
         {
             var session = _httpContextAccessor.HttpContext.Session;
             var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
-            return View(carrito);
+
+            if (carrito.Contains(productoId))
+            {
+                carrito.Remove(productoId);
+                session.SetObjectAsJson("Carrito", carrito);
+            }
+
+            return RedirectToAction("Carrito");
         }
+
+        
+
+
+
     }
 
 }

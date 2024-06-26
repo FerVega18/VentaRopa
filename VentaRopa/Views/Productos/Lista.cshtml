@@ -6,6 +6,18 @@
 
 <h1>Lista de Productos</h1>
 
+
+<form asp-action="Lista" method="get">
+    <label for="sortOrder">Ordenar por:</label>
+    <select id="sortOrder" name="sortOrder" onchange="this.form.submit()">
+        <option value="">Seleccionar...</option>
+        <option value="price_asc">Precio: Menor a Mayor</option>
+        <option value="price_desc">Precio: Mayor a Menor</option>
+        <option value="recent">Más reciente</option>
+       @*  <option value="popular">Más popular</option> *@
+    </select>
+</form>
+
 <div class="container">
     <div class="row">
         @foreach (var producto in Model)

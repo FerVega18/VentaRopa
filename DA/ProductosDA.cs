@@ -114,7 +114,7 @@ namespace DA
                     productoExistente.Precio = producto.Precio;
                     productoExistente.Imagen = producto.Imagen;
                     productoExistente.Stock = producto.Stock;
-
+                    productoExistente.Marca = producto.Marca;
                     await _dbContext.SaveChangesAsync();
                 }
                 return producto.ProductoId;
