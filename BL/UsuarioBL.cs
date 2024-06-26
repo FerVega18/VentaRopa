@@ -31,7 +31,7 @@ namespace BL
         {
             try
             {
-                return usuarioDA.ObtenerUsuario(nombreUsuario, contrasena);
+                return  usuarioDA.ObtenerUsuario(nombreUsuario, contrasena);
             }
             catch (Exception ex)
             {
@@ -39,11 +39,11 @@ namespace BL
             }
         }
 
-        public List<Usuario> ObtenerTodos()
+        public async Task<List<Usuario>> ObtenerTodos()
         {
             try
             {
-                return usuarioDA.ObtenerTodos();
+                 return await usuarioDA.ObtenerTodos();
             }
             catch (Exception ex)
             {

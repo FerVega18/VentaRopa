@@ -19,6 +19,9 @@
                         <h5 class="card-title">@producto.Descripcion</h5>
                         <p class="card-text">Precio: @producto.Precio</p>
                         <a asp-action="Details" asp-route-id="@producto.ProductoId" class="btn btn-primary">Ver Detalles</a>
+                        <form asp-action="AgregarAlCarrito" asp-route-productoId="@producto.ProductoId" method="post">
+                            <button type="submit" class="btn btn-success">Agregar al Carrito</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -35,8 +38,8 @@
 
     .card-img-top {
         width: 100%;
-        height: 200px; 
-        object-fit: contain; 
+        height: 200px;
+        object-fit: contain;
     }
 
     .card-body {
@@ -50,7 +53,6 @@
         margin-bottom: 10px; /* Espaciado entre elementos */
     }
 </style>
-
 
 @section Scripts {
     @{

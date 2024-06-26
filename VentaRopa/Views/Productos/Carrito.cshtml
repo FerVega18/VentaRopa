@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Models.Producto>
+
+@{
+    ViewData["Title"] = "Carrito de Compras";
+}
+
+<h1>Carrito de Compras</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var producto in Model)
+        {
+            <tr>
+                <td>
+                    <img src="@producto.Imagen" alt="@producto.Descripcion" style="width: 100px; height: auto;" />
+                </td>
+                <td>@producto.Descripcion</td>
+                <td>@producto.Precio</td>
+                <td>
+                    <form asp-action="EliminarDelCarrito" method="post" style="display:inline;">
+                        <input type="hidden" name="productoId" value="@producto.ProductoId" />
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Lista" class="btn btn-secondary">Seguir Comprando</a>

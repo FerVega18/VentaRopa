@@ -12,12 +12,22 @@ var connectionString = "Data Source=SQL8006.site4now.net;Initial Catalog=db_aa96
 builder.Services.AddDbContext<DbAa96f3VentaropaContext>(options =>
     options.UseSqlServer(connectionString));
 
+// Registrar servicios de sesión
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de expiración de la sesión
+    options.Cookie.HttpOnly = true; // La cookie sólo estará disponible a través de HTTP
+    options.Cookie.IsEssential = true; // Es esencial para la aplicación
+});
 
 // Registro de otros servicios
 builder.Services.AddScoped<UsuarioBL>();
 builder.Services.AddScoped<UsuarioDA>();
 builder.Services.AddScoped<ProductosBL>();
 builder.Services.AddScoped<CategoriasBL>();
+builder.Services.AddHttpContextAccessor(); // Registra el IHttpContextAccessor
+
 
 // Agregar controladores con vistas
 builder.Services.AddControllersWithViews();
@@ -30,11 +40,14 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Añadir middleware de sesión
+app.UseSession();
 
 app.UseAuthorization();
 
@@ -43,3 +56,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+

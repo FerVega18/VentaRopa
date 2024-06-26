@@ -8,10 +8,12 @@ namespace VentaRopa.Controllers
     public class UsuariosController : Controller
     {
         private readonly UsuarioBL _usuarioBL;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public UsuariosController(UsuarioBL usuarioBL)
+        public UsuariosController(UsuarioBL usuarioBL, IHttpContextAccessor httpContextAccessor)
         {
             _usuarioBL = usuarioBL;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // GET: Usuarios/Crear
@@ -60,21 +62,40 @@ namespace VentaRopa.Controllers
         // POST: Usuarios/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(Usuario usuario)
+        public async Task<IActionResult> Login(string nombreUsuario, string contraseña)
         {
             if (ModelState.IsValid)
             {
-                var user = _usuarioBL.ObtenerUsuario(usuario.NombreUsuario, usuario.Contraseña);
-                if (user != null)
+                var usuario = _usuarioBL.ObtenerUsuario(nombreUsuario, contraseña);
+                if (usuario != null)
                 {
-                    // Implementa aquí la lógica de autenticación (ejemplo: crear cookies de autenticación)
-                    // await SignInUserAsync(user); // Ejemplo de método para autenticar al usuario
+                    HttpContext.Session.SetString("Usuario", usuario.NombreUsuario); // Guarda el nombre del usuario en la sesión
+
+                    // Mover productos del carrito no autenticado al autenticado, si existen
+                    var session = _httpContextAccessor.HttpContext.Session;
+                    var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
+                    if (carrito.Count > 0)
+                    {
+                        // Asocia el carrito con el usuario autenticado (ejemplo conceptual)
+                        // Guardar carrito en la base de datos o asociarlo con el usuario
+                    }
+
                     return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError(string.Empty, "Nombre de usuario o contraseña incorrectos.");
             }
-            return View(usuario);
+            return View();
         }
+
+        // GET: Usuarios/Logout
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear(); // Limpia la sesión
+            return RedirectToAction("Index", "Home");
+        }
+
+       
+        
     }
 }
 

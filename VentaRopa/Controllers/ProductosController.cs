@@ -1,4 +1,5 @@
 ﻿using BL;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -11,11 +12,14 @@ namespace VentaRopa.Controllers
     {
         private ProductosBL _productosBL;
         private CategoriasBL _categoriasBL;
+        private  IHttpContextAccessor _httpContextAccessor;
 
-        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL)
+
+        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL, IHttpContextAccessor  httpContextAccessor)
         {
             _productosBL = productosBL;
             _categoriasBL = categoriasBL;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -61,19 +65,18 @@ namespace VentaRopa.Controllers
             return View(productos);
         }
 
-        // Método para mostrar detalles de un producto
-        //public async Task<IActionResult> Details(int id)
-        //{
-        //    var producto = await _dbContext.Productos
-        //        .FirstOrDefaultAsync(m => m.ProductoId == id);
+        //Método para mostrar detalles de un producto
+        public async Task<IActionResult> Details(int id)
+        {
+            var producto = await _productosBL.obtenerPorId(id);
 
-        //    if (producto == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (producto == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(producto);
-        //}
+            return View(producto);
+        }
 
 
 
@@ -176,6 +179,22 @@ namespace VentaRopa.Controllers
             }
         }
 
+        public IActionResult AgregarAlCarrito(int productoId)
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
+            carrito.Add(productoId);
+            session.SetObjectAsJson("Carrito", carrito);
+
+            return RedirectToAction("Lista"); // Redirige a la página de inicio o a donde prefieras
+        }
+
+        public IActionResult Ver()
+        {
+            var session = _httpContextAccessor.HttpContext.Session;
+            var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
+            return View(carrito);
+        }
     }
 
 }

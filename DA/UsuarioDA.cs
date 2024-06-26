@@ -28,7 +28,7 @@ public class UsuarioDA
         }
     }
 
-    public Usuario ObtenerUsuario(string nombreUsuario, string contrasena)
+    public  Usuario ObtenerUsuario(string nombreUsuario, string contrasena)
     {
         try
         {
@@ -44,11 +44,11 @@ public class UsuarioDA
     }
 
 
-    public List<Usuario> ObtenerTodos()
+    public async Task<List<Usuario>> ObtenerTodos()
     {
         try
         {
-            return _dbContext.Usuarios.ToList();
+            return  _dbContext.Usuarios.ToList();
         }
         catch (Exception ex)
         {

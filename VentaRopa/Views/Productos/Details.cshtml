@@ -1,0 +1,33 @@
+﻿@model Models.Producto
+
+@{
+    ViewData["Title"] = "Detalles del Producto";
+}
+
+<h1>@Model.Descripcion</h1>
+
+<div class="card">
+    <img src="@Model.Imagen" class="card-img-top" alt="@Model.Descripcion" />
+    <div class="card-body">
+        <p class="card-text"><strong>Marca:</strong> @Model.Marca</p>
+        <p class="card-text"><strong>Talla:</strong> @Model.Talla</p>
+        <p class="card-text"><strong>Precio:</strong> $@Model.Precio</p>
+
+        <div class="d-flex justify-content-between">
+            <a asp-action="Lista" class="btn btn-secondary">Volver</a>
+            <form asp-action="AgregarAlCarrito" method="post">
+                <input type="hidden" name="productoId" value="@Model.ProductoId" />
+                <button type="submit" class="btn btn-primary">Añadir al carrito</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+
+
