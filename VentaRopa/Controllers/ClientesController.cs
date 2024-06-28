@@ -10,11 +10,13 @@ namespace VentaRopa.Controllers
     {
         private readonly ClienteBL _clienteBL;
         private readonly UsuarioBL _usuarioBL;
+        private readonly TarjetasBL _tarjetasBL; // Agregamos la referencia a BL de Tarjetas
 
-        public ClientesController(ClienteBL clienteBL, UsuarioBL usuarioBL)
+        public ClientesController(ClienteBL clienteBL, UsuarioBL usuarioBL, TarjetasBL tarjetasBL)
         {
             _clienteBL = clienteBL;
             _usuarioBL = usuarioBL;
+            _tarjetasBL = tarjetasBL;
         }
 
         // GET: Clientes/Crear
@@ -56,7 +58,6 @@ namespace VentaRopa.Controllers
             }
             return View(cliente);
         }
-
-        
     }
 }
+

@@ -6,7 +6,7 @@
 
 <h2>Crear Cliente</h2>
 
-<form asp-action="Crear">
+<form asp-action="Crear" method="post">
     <div class="form-group">
         <label asp-for="Nombre" class="control-label"></label>
         <input asp-for="Nombre" class="form-control" />
@@ -37,6 +37,35 @@
         <input id="Contraseña" name="Contraseña" type="password" class="form-control" />
         <span class="text-danger">Ingrese la contraseña del usuario asociado.</span>
     </div>
+
+    <!-- Agregar direcciones -->
+    <h3>Direcciones</h3>
+    <div id="direcciones">
+        <div class="form-group">
+            <label for="direcciones[0].Descripcion" class="control-label">Descripción de Dirección</label>
+            <input id="direcciones[0].Descripcion" name="direcciones[0].Descripcion" type="text" class="form-control" />
+        </div>
+    </div>
+    <button type="button" id="agregarDireccion" class="btn btn-primary">Agregar Dirección</button>
+
+    <!-- Agregar tarjetas -->
+    <h3>Tarjetas</h3>
+    <div id="tarjetas">
+        <div class="form-group">
+            <label for="tarjetas[0].Numero" class="control-label">Número de Tarjeta</label>
+            <input id="tarjetas[0].Numero" name="tarjetas[0].Numero" type="text" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="tarjetas[0].Cvc" class="control-label">CVC de Tarjeta</label>
+            <input id="tarjetas[0].Cvc" name="tarjetas[0].Cvc" type="text" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="tarjetas[0].FechaVencimiento" class="control-label">Fecha de Vencimiento</label>
+            <input id="tarjetas[0].FechaVencimiento" name="tarjetas[0].FechaVencimiento" type="date" class="form-control" />
+        </div>
+    </div>
+    <button type="button" id="agregarTarjeta" class="btn btn-primary">Agregar Tarjeta</button>
+
     <div class="form-group">
         <input type="submit" value="Crear" class="btn btn-primary" />
     </div>
@@ -46,4 +75,39 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        var contadorDireccion = 1;
+        var contadorTarjeta = 1;
+
+        $('#agregarDireccion').click(function () {
+            var nuevaDireccion = `
+                    <div class="form-group">
+                        <label for="direcciones[${contadorDireccion}].Descripcion" class="control-label">Descripción de Dirección</label>
+                        <input id="direcciones[${contadorDireccion}].Descripcion" name="direcciones[${contadorDireccion}].Descripcion" type="text" class="form-control" />
+                    </div>
+                    `;
+            $('#direcciones').append(nuevaDireccion);
+            contadorDireccion++;
+        });
+
+        $('#agregarTarjeta').click(function () {
+            var nuevaTarjeta = `
+                    <div class="form-group">
+                        <label for="tarjetas[${contadorTarjeta}].Numero" class="control-label">Número de Tarjeta</label>
+                        <input id="tarjetas[${contadorTarjeta}].Numero" name="tarjetas[${contadorTarjeta}].Numero" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="tarjetas[${contadorTarjeta}].Cvc" class="control-label">CVC de Tarjeta</label>
+                        <input id="tarjetas[${contadorTarjeta}].Cvc" name="tarjetas[${contadorTarjeta}].Cvc" type="text" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="tarjetas[${contadorTarjeta}].FechaVencimiento" class="control-label">Fecha de Vencimiento</label>
+                        <input id="tarjetas[${contadorTarjeta}].FechaVencimiento" name="tarjetas[${contadorTarjeta}].FechaVencimiento" type="date" class="form-control" />
+                    </div>
+                    `;
+            $('#tarjetas').append(nuevaTarjeta);
+            contadorTarjeta++;
+        });
+    </script>
 }
+
