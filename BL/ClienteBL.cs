@@ -144,5 +144,42 @@ namespace BL
                 throw new Exception(ex.Message);
             }
         }
+
+        public int AgregarDireccion(Direccion direccion)
+        {
+            try
+            {
+                return clienteDA.AgregarDireccion(direccion);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public int EditarDireccion(Direccion direccion)
+        {
+            try
+            {
+                return clienteDA.EditarDireccion(direccion);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public int EliminarDireccion(Direccion direccion)
+        {
+            try
+            {
+                return clienteDA.EliminarDireccion(direccion);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }

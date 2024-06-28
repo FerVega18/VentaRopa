@@ -23,5 +23,5 @@ public partial class Cliente
 
     public virtual ICollection<Orden> Ordens { get; set; } = new List<Orden>();
 
-    public virtual ICollection<Tarjetum> Tarjeta { get; set; } = new List<Tarjetum>();
+    public virtual ICollection<Tarjeta> Tarjeta { get; set; } = new List<Tarjeta>();
 }

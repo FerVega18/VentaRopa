@@ -11,5 +11,5 @@ public partial class TokenPago
 
     public string? Descripcion { get; set; }
 
-    public virtual Tarjetum? Tarjeta { get; set; }
+    public virtual Tarjeta? Tarjeta { get; set; }
 }

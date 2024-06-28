@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Models;
 
-public partial class Tarjetum
+public partial class Tarjeta
 {
     public int TarjetaId { get; set; }
 

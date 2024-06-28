@@ -19,7 +19,7 @@ namespace BL
             tarjetasDA = new TarjetasDA(context);
         }
 
-        public int Agregar(Tarjetum tarjeta)
+        public int Agregar(Tarjeta tarjeta)
         {
             try
             {

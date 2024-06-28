@@ -17,7 +17,7 @@ namespace DA
             _dbContext = dbContext;
         }
 
-        public int Agregar(Tarjetum tarjeta)
+        public int Agregar(Tarjeta tarjeta)
         {
             try
             {

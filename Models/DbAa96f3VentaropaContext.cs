@@ -31,7 +31,7 @@ public partial class DbAa96f3VentaropaContext : DbContext
 
     public virtual DbSet<Rol> Rols { get; set; }
 
-    public virtual DbSet<Tarjetum> Tarjeta { get; set; }
+    public virtual DbSet<Tarjeta> Tarjeta { get; set; }
 
     public virtual DbSet<TokenPago> TokenPagos { get; set; }
 
@@ -217,7 +217,7 @@ public partial class DbAa96f3VentaropaContext : DbContext
                 .HasColumnName("descripcion");
         });
 
-        modelBuilder.Entity<Tarjetum>(entity =>
+        modelBuilder.Entity<Tarjeta>(entity =>
         {
             entity.HasKey(e => e.TarjetaId).HasName("PK__TARJETA__2F3604728985AF27");
 

@@ -140,6 +140,47 @@ namespace DA
             }
         }
 
+        public int AgregarDireccion(Direccion direccion)
+        {
+            try
+            {
+                _dbContext.Direccions.Add(direccion);
+                _dbContext.SaveChanges();
+                return direccion.DireccionId;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public int EditarDireccion(Direccion direccion)
+        {
+            try
+            {
+                _dbContext.Direccions.Update(direccion);
+                _dbContext.SaveChanges();
+                return direccion.DireccionId;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public int EliminarDireccion(Direccion direccion)
+        {
+            try
+            {
+                _dbContext.Direccions.Remove(direccion);
+                _dbContext.SaveChanges();
+                return direccion.DireccionId;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
     }
 }

@@ -47,9 +47,9 @@ namespace VentaRopa.Controllers
         }
 
         // GET: Usuario/Index
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var usuarios = _usuarioBL.ObtenerTodos();
+            var usuarios = await _usuarioBL.ObtenerTodos();
             return View(usuarios);
         }
 
@@ -80,7 +80,7 @@ namespace VentaRopa.Controllers
                         // Guardar carrito en la base de datos o asociarlo con el usuario
                     }
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Lista", "Productos");
                 }
                 ModelState.AddModelError(string.Empty, "Nombre de usuario o contraseña incorrectos.");
             }
@@ -91,11 +91,7 @@ namespace VentaRopa.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear(); // Limpia la sesión
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Lista", "Productos");
         }
-
-       
-        
     }
 }
-

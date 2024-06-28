@@ -18,6 +18,14 @@ public class UsuarioDA
                 throw new InvalidOperationException("El nombre de usuario ya está en uso.");
             }
 
+            // Asignar el rol 'Cliente'
+            var rolCliente = _dbContext.Rols.FirstOrDefault(r => r.Descripcion == "Cliente");
+            if (rolCliente == null)
+            {
+                throw new Exception("El rol 'Cliente' no existe en la base de datos.");
+            }
+            usuario.RolId = rolCliente.RolId;
+
             _dbContext.Usuarios.Add(usuario);
             _dbContext.SaveChanges();
             return usuario.NombreUsuario;

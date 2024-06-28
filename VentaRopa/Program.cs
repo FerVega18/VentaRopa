@@ -26,7 +26,9 @@ builder.Services.AddScoped<UsuarioBL>();
 builder.Services.AddScoped<UsuarioDA>();
 builder.Services.AddScoped<ProductosBL>();
 builder.Services.AddScoped<CategoriasBL>();
-builder.Services.AddHttpContextAccessor(); // Registra el IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ClienteBL>();
+
 
 
 // Agregar controladores con vistas
