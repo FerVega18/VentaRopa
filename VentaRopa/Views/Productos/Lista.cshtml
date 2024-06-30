@@ -5,15 +5,14 @@
 }
 
 <h1>Lista de Productos</h1>
-<form method="get" asp-action="Buscar">
+
+<form asp-action="Lista" method="get">
     <div class="form-group">
         <label for="searchQuery">Buscar Producto:</label>
         <input type="text" id="searchQuery" name="searchQuery" class="form-control" placeholder="Ingrese nombre o código del producto" value="@ViewData["searchQuery"]" />
     </div>
     <button type="submit" class="btn btn-primary">Buscar</button>
-</form>
-
-<form asp-action="Lista" method="get">
+    <div class="form-group">
     <label for="sortOrder">Ordenar por:</label>
     <select id="sortOrder" name="sortOrder" onchange="this.form.submit()">
         <option value="">Seleccionar...</option>

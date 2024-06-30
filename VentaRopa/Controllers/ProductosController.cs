@@ -59,10 +59,24 @@ namespace VentaRopa.Controllers
             return View(producto);
         }
 
-        public async Task<IActionResult> Lista(string sortOrder)
+        public async Task<IActionResult> Lista(string searchQuery, string sortOrder)
         {
             var productos = await _productosBL.ObtenerTodos();
 
+            // Filtrar los productos por la consulta de búsqueda
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                searchQuery = searchQuery.ToLower(); // Convertir la consulta a minúsculas para comparación sin distinción de casos
+
+                productos = productos.Where(p =>
+                    p.Talla.ToLower().Contains(searchQuery) ||
+                    p.CategoriaId.ToString().Contains(searchQuery) ||
+                    p.Marca.ToString().Contains(searchQuery) ||
+                    p.Descripcion.ToString().Contains(searchQuery)// No afectado por distinción de mayúsculas/minúsculas
+                ).ToList();
+            }
+
+            // Ordenar los productos según el parámetro de orden
             switch (sortOrder)
             {
                 case "price_asc":
@@ -72,18 +86,20 @@ namespace VentaRopa.Controllers
                     productos = productos.OrderByDescending(p => p.Precio).ToList();
                     break;
                 case "recent":
-                    productos = productos.OrderByDescending(p => p.ProductoId).ToList(); // Ordenar por ID en orden descendente
+                    productos = productos.OrderByDescending(p => p.ProductoId).ToList();
                     break;
-                //case "popular":
-                //    productos = productos.OrderByDescending(p => p.Popularidad).ToList(); // Asumiendo que tienes una propiedad Popularidad
-                //    break;
                 default:
-                    productos = productos.OrderBy(p => p.Descripcion).ToList(); // Orden por defecto
+                    productos = productos.OrderBy(p => p.Descripcion).ToList();
                     break;
             }
 
+            // Pasar los valores a la vista a través de ViewData
+            ViewData["searchQuery"] = searchQuery;
+            ViewData["sortOrder"] = sortOrder;
+
             return View(productos);
         }
+
 
         //Método para mostrar detalles de un producto
         public async Task<IActionResult> Details(int id)
