@@ -7,58 +7,69 @@
 
 <h1>Carrito de Compras</h1>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Cantidad</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    <img src="@item.producto.Imagen" alt="@item.producto.Descripcion" style="width: 100px; height: auto;" />
-                </td>
-                <td>@item.producto.Descripcion</td>
-                <td>₡ @item.producto.Precio</td>
-                <td>
-                    <form asp-action="ActualizarCantidad" method="post" style="display:inline;">
-                        <input type="hidden" name="productoId" value="@item.producto.ProductoId" />
-                        <input type="number" name="cantidad" value="@item.cantidad" min="1" max="@item.producto.Stock" class="form-control" style="width: 80px; display: inline-block;" />
-                        <button type="submit" class="btn btn-link" style="color: #c2c2c2; font-size: 12px;">Actualizar</button>
-                    </form>
+@if (TempData["CarritoVacio"] != null)
+{
+    <div class="alert alert-warning" role="alert">
+        @TempData["CarritoVacio"]
+    </div>
+}
 
-                </td>
+@if (TempData["CantidadExcedida"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["CantidadExcedida"]
+    </div>
+}
 
-                <td>$@(item.producto.Precio * item.cantidad)</td>
-                <td>
-                    <form asp-action="EliminarDelCarrito" method="post" style="display:inline;">
-                        <input type="hidden" name="productoId" value="@item.producto.ProductoId" />
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar este producto del carrito?');">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@if (Model.Count > 0)
+{
+    <form asp-action="ActualizarCarrito" method="post">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <img src="@Model[i].producto.Imagen" alt="@Model[i].producto.Descripcion" style="width: 100px; height: auto;" />
+                        </td>
+                        <td>@Model[i].producto.Descripcion</td>
+                        <td>₡ @Model[i].producto.Precio</td>
+                        <td>
+                            <input type="hidden" name="productos[@i].productoId" value="@Model[i].producto.ProductoId" />
+                            <input type="number" name="productos[@i].cantidad" value="@Model[i].cantidad" min="1" max="@Model[i].producto.Stock" class="form-control" style="width: 80px; display: inline-block;" />
+                        </td>
+                        <td>₡@(Model[i].producto.Precio * Model[i].cantidad)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-<div class="text-right">
-    <h3><strong>Total:₡ @total</strong></h3>
-    <form asp-action="Comprar" method="post">
+        <div class="text-right">
+            <h3><strong>Total: ₡ @total</strong></h3>
+            <button type="submit" class="btn btn-primary">Actualizar Carrito</button>
+        </div>
+    </form>
+
+    <form asp-action="Comprar" method="post" style="margin-top: 10px;">
         <button type="submit" class="btn btn-success">Comprar</button>
     </form>
-</div>
 
-<a asp-action="Lista" class="btn btn-secondary">Seguir Comprando</a>
+    <a asp-action="Lista" class="btn btn-secondary" style="margin-top: 10px;">Seguir Comprando</a>
+}
+
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

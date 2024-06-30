@@ -43,6 +43,12 @@ namespace VentaRopa.Controllers
                         return View(cliente);
                     }
 
+                    if (_clienteBL.ObtenerPorId(cliente.ClienteId) != null) {
+
+                        ModelState.AddModelError(string.Empty, "El cliente ya existe");
+                        return View(cliente);
+                    }
+
                     // Asignar el usuario al cliente
                     cliente.NombreUsuarioNavigation = usuario;
 
@@ -58,6 +64,7 @@ namespace VentaRopa.Controllers
             }
             return View(cliente);
         }
+
     }
 }
 

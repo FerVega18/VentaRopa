@@ -26,6 +26,7 @@ builder.Services.AddScoped<UsuarioBL>();
 builder.Services.AddScoped<UsuarioDA>();
 builder.Services.AddScoped<ProductosBL>();
 builder.Services.AddScoped<CategoriasBL>();
+builder.Services.AddScoped<ClienteBL>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ClienteBL>();
 builder.Services.AddScoped<TarjetasBL>();

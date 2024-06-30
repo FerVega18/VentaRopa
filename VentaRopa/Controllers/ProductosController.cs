@@ -224,6 +224,11 @@ namespace VentaRopa.Controllers
             var session = _httpContextAccessor.HttpContext.Session;
             var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
 
+            if (carrito.Count == 0)
+            {
+                TempData["CarritoVacio"] = "Tu carrito de compras está vacío.";
+            }
+
             var productosCarrito = new List<(Producto producto, int cantidad)>();
 
             foreach (var item in carrito)
@@ -236,6 +241,32 @@ namespace VentaRopa.Controllers
             }
 
             return View(productosCarrito);
+        }
+
+        public async Task<IActionResult> Buscar(string searchQuery) {
+            try
+            {
+                var productos = await _productosBL.ObtenerTodos(); // Utiliza el método de ProductosBL para obtener todos los productos
+
+                if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    searchQuery = searchQuery.ToLower(); // Convertir la consulta a minúsculas para comparación sin distinción de casos
+
+                    productos = productos.Where(p =>
+                        p.Talla.ToLower().Contains(searchQuery) ||
+                        p.CategoriaId.ToString().Contains(searchQuery) ||
+                        p.Marca.ToString().Contains(searchQuery) ||
+                        p.Descripcion.ToString().Contains(searchQuery)// No afectado por distinción de mayúsculas/minúsculas
+                    ).ToList();
+                }
+
+                return View(productos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error al gestionar productos: " + ex.Message);
+            }
+
         }
 
 
@@ -255,32 +286,72 @@ namespace VentaRopa.Controllers
         }
 
         [HttpPost]
-        public IActionResult ActualizarCantidad(int productoId, int cantidad)
+        [HttpPost]
+        public async Task<IActionResult> ActualizarCarrito(List<CarritoProducto> productos)
         {
             var session = _httpContextAccessor.HttpContext.Session;
             var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
 
-            if (carrito.ContainsKey(productoId))
+            foreach (var item in productos)
             {
-                if (cantidad > 0)
+                var producto = await _productosBL.obtenerPorId(item.productoId);
+                if (producto == null)
                 {
-                    carrito[productoId] = cantidad;
-                }
-                else
-                {
-                    carrito.Remove(productoId);
+                    continue;
                 }
 
-                session.SetObjectAsJson("Carrito", carrito);
+                if (item.cantidad > producto.Stock)
+                {
+                    TempData["CantidadExcedida"] = $"No hay suficiente stock disponible para {producto.Descripcion}. Stock disponible: {producto.Stock}.";
+                    return RedirectToAction("Carrito");
+                }
+
+                if (carrito.ContainsKey(item.productoId))
+                {
+                    if (item.cantidad > 0)
+                    {
+                        carrito[item.productoId] = item.cantidad;
+                    }
+                    else
+                    {
+                        carrito.Remove(item.productoId);
+                    }
+                }
             }
+
+            session.SetObjectAsJson("Carrito", carrito);
 
             return RedirectToAction("Carrito");
         }
 
+        public class CarritoProducto
+        {
+            public int productoId { get; set; }
+            public int cantidad { get; set; }
+        }
 
 
+
+        [HttpPost]
+        public IActionResult Comprar()
+        {
+            
+           
+            // Si el usuario no ha iniciado sesión, redirigirlo a la página de inicio de sesión
+            return RedirectToAction("Crear","Clientes");
+            
+
+            // Aquí puedes implementar la lógica para procesar la compra
+
+            //return RedirectToAction("ConfirmacionCompra");
+        }
+
+        
 
     }
-
 }
+
+    
+
+
 

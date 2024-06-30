@@ -32,7 +32,7 @@ namespace VentaRopa.Controllers
                 try
                 {
                     _usuarioBL.Agregar(usuario);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Crear","Clientes");
                 }
                 catch (InvalidOperationException ex)
                 {
