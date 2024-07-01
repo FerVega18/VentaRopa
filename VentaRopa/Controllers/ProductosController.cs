@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using System.IO;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace VentaRopa.Controllers
 {
@@ -50,6 +51,8 @@ namespace VentaRopa.Controllers
                         await imageFile.CopyToAsync(stream);
                     }
                     producto.Imagen = "/Imagenes/" + uniqueFileName;
+                    Categoria ca= _categoriasBL.ObtenerPorId(producto.CategoriaId.Value);
+                    producto.Categoria = ca;
                 }
 
                 await _productosBL.Agregar(producto);
@@ -59,21 +62,31 @@ namespace VentaRopa.Controllers
             return View(producto);
         }
 
-        public async Task<IActionResult> Lista(string searchQuery, string sortOrder)
+        public async Task<IActionResult> Lista(string searchQuery, string sortOrder, string filter)
         {
             var productos = await _productosBL.ObtenerTodos();
 
-            // Filtrar los productos por la consulta de búsqueda
-            if (!string.IsNullOrEmpty(searchQuery))
-            {
-                searchQuery = searchQuery.ToLower(); // Convertir la consulta a minúsculas para comparación sin distinción de casos
 
-                productos = productos.Where(p =>
-                    p.Talla.ToLower().Contains(searchQuery) ||
-                    p.CategoriaId.ToString().Contains(searchQuery) ||
-                    p.Marca.ToString().Contains(searchQuery) ||
-                    p.Descripcion.ToString().Contains(searchQuery)// No afectado por distinción de mayúsculas/minúsculas
-                ).ToList();
+            // Aplicar filtros de búsqueda
+            if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(filter))
+            {
+                searchQuery = searchQuery.ToLower();
+
+                switch (filter.ToLower())
+                {
+                    case "nombre":
+                        productos = productos.Where(p => p.Descripcion.ToLower().Contains(searchQuery)).ToList();
+                        break;
+                    case "categoria":
+                        productos = productos.Where(p => p.Categoria.Descripcion.ToLower().Contains(searchQuery)).ToList();
+                        break;
+                    case "talla":
+                        productos = productos.Where(p => p.Talla.ToLower().Contains(searchQuery)).ToList();
+                        break;
+                    case "marca":
+                        productos = productos.Where(p => p.Marca.ToLower().Contains(searchQuery)).ToList();
+                        break;
+                }
             }
 
             // Ordenar los productos según el parámetro de orden
@@ -96,6 +109,7 @@ namespace VentaRopa.Controllers
             // Pasar los valores a la vista a través de ViewData
             ViewData["searchQuery"] = searchQuery;
             ViewData["sortOrder"] = sortOrder;
+            ViewData["filter"] = filter;
 
             return View(productos);
         }

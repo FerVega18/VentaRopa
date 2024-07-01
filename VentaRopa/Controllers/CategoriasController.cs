@@ -49,7 +49,7 @@ namespace VentaRopa.Controllers
         [HttpGet]
         public async Task<IActionResult> Editar(int id)
         {
-            var categoria = await _categoriasBL.ObtenerPorId(id);
+            var categoria =  _categoriasBL.ObtenerPorId(id);
             if (categoria == null)
             {
                 return NotFound();

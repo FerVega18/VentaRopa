@@ -6,21 +6,38 @@
 
 <h1>Lista de Productos</h1>
 
+<form method="get" asp-action="Lista">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="searchQuery">Buscar Producto:</label>
+            <input type="text" id="searchQuery" name="searchQuery" class="form-control" placeholder="Ingrese palabra clave" value="@ViewData["searchQuery"]" />
+        </div>
+        <div class="form-group col-md-4">
+            <label for="filter">Filtrar por:</label>
+            <select id="filter" name="filter" class="form-control">
+                <option value="">Seleccionar...</option>
+                <option value="nombre">Nombre</option>
+                <option value="categoria">Categoría</option>
+                <option value="talla">Talla</option>
+                <option value="marca">Marca</option>
+            </select>
+        </div>
+        <div class="form-group col-md-2 align-self-end">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </div>
+</form>
+
 <form asp-action="Lista" method="get">
     <div class="form-group">
-        <label for="searchQuery">Buscar Producto:</label>
-        <input type="text" id="searchQuery" name="searchQuery" class="form-control" placeholder="Ingrese nombre o código del producto" value="@ViewData["searchQuery"]" />
+        <label for="sortOrder">Ordenar por:</label>
+        <select id="sortOrder" name="sortOrder" class="form-control" onchange="this.form.submit()">
+            <option value="">Seleccionar...</option>
+            <option value="price_asc">Precio: Menor a Mayor</option>
+            <option value="price_desc">Precio: Mayor a Menor</option>
+            <option value="recent">Más reciente</option>
+        </select>
     </div>
-    <button type="submit" class="btn btn-primary">Buscar</button>
-    <div class="form-group">
-    <label for="sortOrder">Ordenar por:</label>
-    <select id="sortOrder" name="sortOrder" onchange="this.form.submit()">
-        <option value="">Seleccionar...</option>
-        <option value="price_asc">Precio: Menor a Mayor</option>
-        <option value="price_desc">Precio: Mayor a Menor</option>
-        <option value="recent">Más reciente</option>
-       @*  <option value="popular">Más popular</option> *@
-    </select>
 </form>
 
 <div class="container">
@@ -81,5 +98,6 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
 
 

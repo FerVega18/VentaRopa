@@ -73,7 +73,7 @@ namespace DA
 
 
         public int AgregarDirecciones(Direccion direccion, int clienteID)
-        { //Implica una nueva tabla direcciones
+        { 
             try
             {
                 Cliente cliente = ObtenerPorId(clienteID);

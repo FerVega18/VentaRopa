@@ -29,11 +29,12 @@ namespace BL
             }
         }
 
-        public async Task<Categoria> ObtenerPorId(int id)
+        public Categoria ObtenerPorId(int id)
         {
             try
             {
-                return await categoriasDA.ObtenerPorId(id);
+                Categoria ca = categoriasDA.ObtenerPorId(2);
+                return ca;
             }
             catch (Exception ex)
             {

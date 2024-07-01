@@ -28,11 +28,12 @@ namespace DA
             }
         }
 
-        public async Task<Categoria> ObtenerPorId(int id)
+        public Categoria ObtenerPorId(int id)
         {
             try
             {
-                return await _dbContext.Categoria.FirstOrDefaultAsync(c => c.CategoriaId == id);
+                Categoria ca =  _dbContext.Categoria.FirstOrDefault(c => c.CategoriaId == 3);
+                return ca;
             }
             catch (Exception ex)
             {
@@ -58,7 +59,7 @@ namespace DA
         {
             try
             {
-                Categoria categoriaExistente = await ObtenerPorId(id);
+                Categoria categoriaExistente =  ObtenerPorId(id);
                 if (categoriaExistente != null)
                 {
                     categoriaExistente.Descripcion = categoria.Descripcion;
