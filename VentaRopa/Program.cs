@@ -28,9 +28,14 @@ builder.Services.AddScoped<ProductosBL>();
 builder.Services.AddScoped<CategoriasBL>();
 builder.Services.AddScoped<ClienteBL>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ClienteBL>();
 builder.Services.AddScoped<TarjetasBL>();
+builder.Services.AddScoped<OrdenesBL>();
+builder.Services.AddScoped<DetallesOrdenBL>();
+builder.Services.AddScoped<DireccionesBL>();
+builder.Services.AddScoped<ClienteBL>();
 
+// Registrar IHttpContextAccessor
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
 // Agregar controladores con vistas

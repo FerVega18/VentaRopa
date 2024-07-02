@@ -1,27 +1,31 @@
 ﻿using BL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
+using System.Linq;
 
 public class OrdenController : Controller
 {
     private readonly DbAa96f3VentaropaContext _context;
     private readonly OrdenesBL _ordenesBL;
     private readonly DetallesOrdenBL _detallesOrdenBL;
-    private DireccionesBL _direccionesBL;
-    private ClienteBL _clienteBL;
-    private UsuarioBL _usuarioBL;
+    private readonly DireccionesBL _direccionesBL;
+    private readonly ClienteBL _clienteBL;
+    private readonly UsuarioBL _usuarioBL;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public OrdenController(DbAa96f3VentaropaContext context, OrdenesBL ordenesBL, DetallesOrdenBL detallesOrdenBL, IHttpContextAccessor httpContextAccessor, DireccionesBL direccionesBL, UsuarioBL usuarioBL)
+    public OrdenController(OrdenesBL ordenesBL, DetallesOrdenBL detallesOrdenBL, IHttpContextAccessor httpContextAccessor, DireccionesBL direccionesBL, ClienteBL clienteBL, UsuarioBL usuarioBL, DbAa96f3VentaropaContext context)
     {
-        _context = context;
         _ordenesBL = ordenesBL;
         _detallesOrdenBL = detallesOrdenBL;
         _httpContextAccessor = httpContextAccessor;
         _direccionesBL = direccionesBL;
+        _clienteBL = clienteBL;
         _usuarioBL = usuarioBL;
+        _context = context;
     }
 
+    [HttpGet]
     public IActionResult Compra()
     {
         if (User.Identity.IsAuthenticated)
@@ -42,10 +46,10 @@ public class OrdenController : Controller
     }
 
     [HttpPost]
-    public IActionResult ProcesarCompra(string nombre, string apellido, string direccion, string ciudad, string codigoPostal, string numeroTarjeta, string cvc, DateOnly fechaVencimiento, int? direccionId, int? tarjetaId, List<ProductoCantidad> productos)
+    public IActionResult ProcesarCompra(string nombre, string apellido, string direccion, string ciudad, string codigoPostal, string numeroTarjeta, string cvc, DateOnly fechaVencimiento, int? direccionId, int? tarjetaId, List<CarritoProducto> productos)
     {
         Orden orden = null;
-        EstadoOrden estado = new EstadoOrden { Descripcion = "En proceso"};
+        EstadoOrden estado = new EstadoOrden { Descripcion = "En proceso" };
 
         if (User.Identity.IsAuthenticated)
         {
@@ -70,24 +74,22 @@ public class OrdenController : Controller
             {
                 OrdenFecha = DateOnly.FromDateTime(DateTime.Now),
                 NombreD = nombre,
-                DireccionD = direccion,
-                EstadoId = estado.EstadoId 
             };
         }
 
-        _ordenesBL.Agregar(orden,estado);
-
+        // Guardar orden y detalles de la orden
+        _ordenesBL.Agregar(orden, orden.Estado);
         // Agregar detalles de la orden utilizando las cantidades proporcionadas
         foreach (var item in productos)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.ProductoId == item.ProductoId);
+            var producto = _context.Productos.FirstOrDefault(p => p.ProductoId == item.productoId);
             if (producto != null)
             {
                 var detallesOrden = new DetallesOrden
                 {
                     OrdenId = orden.OrdenId,
                     ProductoId = producto.ProductoId,
-                    Cantidad = item.Cantidad,
+                    Cantidad = item.cantidad,
                     Precio = producto.Precio
                 };
 
@@ -95,19 +97,13 @@ public class OrdenController : Controller
             }
         }
 
-        // Limpiar el carrito después de la compra
-        _httpContextAccessor.HttpContext.Session.Remove("Carrito");
 
         ViewBag.CompraProcesada = true;
-        return View("Compra");
-    }
-
-    public class ProductoCantidad
-    {
-        public int ProductoId { get; set; }
-        public int Cantidad { get; set; }
+        return RedirectToAction("Confirmacion");
     }
 }
+
+
 
 
 

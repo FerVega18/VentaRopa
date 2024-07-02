@@ -17,13 +17,14 @@ namespace VentaRopa.Controllers
         private ProductosBL _productosBL;
         private CategoriasBL _categoriasBL;
         private IHttpContextAccessor _httpContextAccessor;
+        private ClienteBL _clienteBL;
 
-
-        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL, IHttpContextAccessor httpContextAccessor)
+        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL, IHttpContextAccessor httpContextAccessor, ClienteBL clienteBL)
         {
             _productosBL = productosBL;
             _categoriasBL = categoriasBL;
             _httpContextAccessor = httpContextAccessor;
+            _clienteBL = clienteBL;
         }
 
         [HttpGet]
@@ -252,100 +253,6 @@ namespace VentaRopa.Controllers
             return RedirectToAction("Lista");
         }
 
-
-        public async Task<IActionResult> Carrito()
-        {
-            var session = _httpContextAccessor.HttpContext.Session;
-            var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
-
-            if (carrito.Count == 0)
-            {
-                TempData["CarritoVacio"] = "Tu carrito de compras está vacío.";
-            }
-
-            var productosCarrito = new List<(Producto producto, int cantidad)>();
-
-            foreach (var item in carrito)
-            {
-                var producto = await _productosBL.obtenerPorId(item.Key);
-                if (producto != null)
-                {
-                    productosCarrito.Add((producto, item.Value));
-                }
-            }
-
-            return View(productosCarrito);
-        }
-
-
-
-
-        [HttpPost]
-        public IActionResult EliminarDelCarrito(int productoId)
-        {
-            var session = _httpContextAccessor.HttpContext.Session;
-            var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
-
-            if (carrito.ContainsKey(productoId))
-            {
-                carrito.Remove(productoId);
-                session.SetObjectAsJson("Carrito", carrito);
-            }
-
-            return RedirectToAction("Carrito");
-        }
-
-     
-        [HttpPost]
-        public async Task<IActionResult> ActualizarCarrito(List<CarritoProducto> productos)
-        {
-            var session = _httpContextAccessor.HttpContext.Session;
-            var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
-
-            foreach (var item in productos)
-            {
-                var producto = await _productosBL.obtenerPorId(item.productoId);
-                if (producto == null)
-                {
-                    continue;
-                }
-
-                if (item.cantidad > producto.Stock)
-                {
-                    TempData["CantidadExcedida"] = $"No hay suficiente stock disponible para {producto.Descripcion}. Stock disponible: {producto.Stock}.";
-                    return RedirectToAction("Carrito");
-                }
-
-                if (carrito.ContainsKey(item.productoId))
-                {
-                    if (item.cantidad > 0)
-                    {
-                        carrito[item.productoId] = item.cantidad;
-                    }
-                    else
-                    {
-                        carrito.Remove(item.productoId);
-                    }
-                }
-            }
-
-            session.SetObjectAsJson("Carrito", carrito);
-
-            return RedirectToAction("Carrito");
-        }
-
-        public class CarritoProducto
-        {
-            public int productoId { get; set; }
-            public int cantidad { get; set; }
-        }
-
-        [HttpPost]
-        public IActionResult Compra()
-        {
-
-            return RedirectToAction("Compra", "Ordenes"); ;
-        }
 
 
     }
