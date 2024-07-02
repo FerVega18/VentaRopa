@@ -59,17 +59,18 @@
         </div>
     </form>
 
-    <form asp-action="Comprar" method="post" style="margin-top: 10px;">
+    <form asp-action="Compra" method="post" asp-controller="Productos" style="margin-top: 10px;">
         <button type="submit" class="btn btn-success">Comprar</button>
     </form>
 
     <a asp-action="Lista" class="btn btn-secondary" style="margin-top: 10px;">Seguir Comprando</a>
 }
 
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
+
 

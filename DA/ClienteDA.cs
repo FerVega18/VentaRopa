@@ -70,69 +70,12 @@ namespace DA
             }
         }
 
-
-
-        public int AgregarDirecciones(Direccion direccion, int clienteID)
-        { 
-            try
-            {
-                Cliente cliente = ObtenerPorId(clienteID);
-                direccion.ClienteId = cliente.ClienteId;
-                _dbContext.Direccions.Add(direccion);
-                _dbContext.SaveChanges();
-                return cliente.ClienteId;
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public int EditarDireccion(Direccion direccion, int clienteID)
+        public Cliente obtenerClientePorUsuario(string nombreUsuario)
         {
             try
             {
+                return _dbContext.Clientes.AsEnumerable().FirstOrDefault(u => u.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase));
 
-
-                Direccion direccionPorActualizar = obtenerDireccionPorCliente(clienteID);
-                direccionPorActualizar.DireccionId = direccion.DireccionId;
-                direccionPorActualizar.Descripcion = direccion.Descripcion;
-                direccionPorActualizar.ClienteId = direccion.ClienteId;
-                _dbContext.Direccions.Update(direccionPorActualizar);
-                _dbContext.SaveChanges();
-                return direccion.DireccionId;
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public int EliminarDireccion(int clienteID)
-        {
-            try
-            {
-                Direccion direccionPorEliminar = obtenerDireccionPorCliente(clienteID);
-                _dbContext.Direccions.Remove(direccionPorEliminar);
-                _dbContext.SaveChanges();
-                return direccionPorEliminar.DireccionId;
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public Direccion obtenerDireccionPorCliente(int clienteID)
-        {
-            try
-            {
-                return _dbContext.Direccions.FirstOrDefault(d => d.ClienteId == clienteID);
             }
             catch (Exception ex)
             {
@@ -140,47 +83,7 @@ namespace DA
             }
         }
 
-        public int AgregarDireccion(Direccion direccion)
-        {
-            try
-            {
-                _dbContext.Direccions.Add(direccion);
-                _dbContext.SaveChanges();
-                return direccion.DireccionId;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
 
-        public int EditarDireccion(Direccion direccion)
-        {
-            try
-            {
-                _dbContext.Direccions.Update(direccion);
-                _dbContext.SaveChanges();
-                return direccion.DireccionId;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public int EliminarDireccion(Direccion direccion)
-        {
-            try
-            {
-                _dbContext.Direccions.Remove(direccion);
-                _dbContext.SaveChanges();
-                return direccion.DireccionId;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
 
     }
 }

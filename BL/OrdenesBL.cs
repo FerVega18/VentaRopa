@@ -19,11 +19,13 @@ namespace BL
             ordenesDA = new OrdenesDA(context);
         }
 
-        public int Agregar(Orden orden)
+        public int Agregar(Orden orden, EstadoOrden estado)
         {
             try
             {
-                return ordenesDA.Agregar(orden);
+                orden.EstadoId = estado.EstadoId;
+                orden.Estado = estado;
+                return ordenesDA.Agregar(orden,estado);
             }
             catch (Exception ex)
             {
@@ -42,5 +44,7 @@ namespace BL
                 throw new Exception("Error al obtener las órdenes por fecha: " + ex.Message);
             }
         }
+
+       
     }
 }

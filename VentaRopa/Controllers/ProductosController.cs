@@ -1,4 +1,5 @@
 ﻿using BL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,14 +10,16 @@ using static System.Net.WebRequestMethods;
 
 namespace VentaRopa.Controllers
 {
+
     public class ProductosController : Controller
     {
+
         private ProductosBL _productosBL;
         private CategoriasBL _categoriasBL;
-        private  IHttpContextAccessor _httpContextAccessor;
+        private IHttpContextAccessor _httpContextAccessor;
 
 
-        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL, IHttpContextAccessor  httpContextAccessor)
+        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL, IHttpContextAccessor httpContextAccessor)
         {
             _productosBL = productosBL;
             _categoriasBL = categoriasBL;
@@ -51,7 +54,7 @@ namespace VentaRopa.Controllers
                         await imageFile.CopyToAsync(stream);
                     }
                     producto.Imagen = "/Imagenes/" + uniqueFileName;
-                    Categoria ca= _categoriasBL.ObtenerPorId(producto.CategoriaId.Value);
+                    Categoria ca = _categoriasBL.ObtenerPorId(producto.CategoriaId.Value);
                     producto.Categoria = ca;
                 }
 
@@ -61,6 +64,7 @@ namespace VentaRopa.Controllers
             ViewData["Categorias"] = await _categoriasBL.ObtenerTodos();
             return View(producto);
         }
+
 
         public async Task<IActionResult> Lista(string searchQuery, string sortOrder, string filter)
         {
@@ -138,7 +142,7 @@ namespace VentaRopa.Controllers
             {
                 return NotFound();
             }
-            ViewData["Categorias"] =  await _categoriasBL.ObtenerTodos();
+            ViewData["Categorias"] = await _categoriasBL.ObtenerTodos();
             return View(producto);
         }
 
@@ -172,7 +176,7 @@ namespace VentaRopa.Controllers
                         producto.Imagen = "/Imagenes/" + uniqueFileName;
                     }
 
-                    await _productosBL.Actualizar(id,producto);
+                    await _productosBL.Actualizar(id, producto);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -187,7 +191,7 @@ namespace VentaRopa.Controllers
                 }
                 return RedirectToAction(nameof(Gestionar));
             }
-            ViewData["Categorias"] = await  _categoriasBL.ObtenerTodos();
+            ViewData["Categorias"] = await _categoriasBL.ObtenerTodos();
             return View(producto);
         }
 
@@ -228,7 +232,7 @@ namespace VentaRopa.Controllers
                 return BadRequest("Error al gestionar productos: " + ex.Message);
             }
         }
-
+        [AllowAnonymous]
         public IActionResult AgregarAlCarrito(int productoId, int cantidad = 1)
         {
             var session = _httpContextAccessor.HttpContext.Session;
@@ -273,31 +277,7 @@ namespace VentaRopa.Controllers
             return View(productosCarrito);
         }
 
-        public async Task<IActionResult> Buscar(string searchQuery) {
-            try
-            {
-                var productos = await _productosBL.ObtenerTodos(); // Utiliza el método de ProductosBL para obtener todos los productos
 
-                if (!string.IsNullOrEmpty(searchQuery))
-                {
-                    searchQuery = searchQuery.ToLower(); // Convertir la consulta a minúsculas para comparación sin distinción de casos
-
-                    productos = productos.Where(p =>
-                        p.Talla.ToLower().Contains(searchQuery) ||
-                        p.CategoriaId.ToString().Contains(searchQuery) ||
-                        p.Marca.ToString().Contains(searchQuery) ||
-                        p.Descripcion.ToString().Contains(searchQuery)// No afectado por distinción de mayúsculas/minúsculas
-                    ).ToList();
-                }
-
-                return View(productos);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Error al gestionar productos: " + ex.Message);
-            }
-
-        }
 
 
         [HttpPost]
@@ -315,7 +295,7 @@ namespace VentaRopa.Controllers
             return RedirectToAction("Carrito");
         }
 
-        [HttpPost]
+     
         [HttpPost]
         public async Task<IActionResult> ActualizarCarrito(List<CarritoProducto> productos)
         {
@@ -360,23 +340,13 @@ namespace VentaRopa.Controllers
             public int cantidad { get; set; }
         }
 
-
-
         [HttpPost]
-        public IActionResult Comprar()
+        public IActionResult Compra()
         {
-            
-           
-            // Si el usuario no ha iniciado sesión, redirigirlo a la página de inicio de sesión
-            return RedirectToAction("Crear","Clientes");
-            
 
-            // Aquí puedes implementar la lógica para procesar la compra
-
-            //return RedirectToAction("ConfirmacionCompra");
+            return RedirectToAction("Compra", "Ordenes"); ;
         }
 
-        
 
     }
 }

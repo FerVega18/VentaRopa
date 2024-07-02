@@ -47,7 +47,7 @@ namespace VentaRopa.Controllers
         }
 
         // GET: Usuario/Index
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index() //Quitar esto
         {
             var usuarios = await _usuarioBL.ObtenerTodos();
             return View(usuarios);

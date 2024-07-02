@@ -40,7 +40,7 @@ public class UsuarioDA
     {
         try
         {
-            var usuario = _dbContext.Usuarios
+            Usuario usuario = _dbContext.Usuarios
                 .AsEnumerable()
                 .FirstOrDefault(u => u.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase) && u.Contraseña == contrasena);
             return usuario;
@@ -51,6 +51,14 @@ public class UsuarioDA
         }
     }
 
+    public Usuario obtenerUsuarioPorNombre(string nombreUsuario) {
+        try {
+            return _dbContext.Usuarios.AsEnumerable().FirstOrDefault(u => u.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase));
+          
+        } catch (Exception ex) {
+            throw new Exception(ex.Message);
+        }
+    }
 
     public async Task<List<Usuario>> ObtenerTodos()
     {

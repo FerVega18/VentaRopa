@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,10 @@ namespace DA
             _dbContext = dbContext;
         }
 
-        public int Agregar(Orden orden) {
+        public int Agregar(Orden orden, EstadoOrden estado) {
             try {
                 _dbContext.Ordens.Add(orden);
+                _dbContext.EstadoOrdens.Add(estado);
                 return orden.OrdenId;
             
             } catch (Exception ex) {
@@ -30,13 +32,24 @@ namespace DA
         {
             try
             {
-                // Asegúrate de que la propiedad "Fecha" sea la correcta en tu entidad Orden
+               
                 return _dbContext.Set<Orden>()
                                  .Where(o => o.OrdenFecha >= fechaInicio && o.OrdenFecha <= fechaFin)
                                  .ToList();
             }
             catch (Exception ex)
             {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        private async Task<EstadoOrden> obtenerEstadoPorID(int estado) {
+            try
+            {
+                return await _dbContext.EstadoOrdens.FirstOrDefaultAsync(e => e.EstadoId == estado);
+
+            }
+            catch (Exception ex) {
                 throw new Exception(ex.Message);
             }
         }

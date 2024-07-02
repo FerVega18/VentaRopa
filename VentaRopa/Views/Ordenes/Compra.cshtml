@@ -1,0 +1,85 @@
+﻿@{
+    ViewData["Title"] = "Comprar";
+    var usuarioAutenticado = ViewBag.UsuarioAutenticado as bool?;
+    var cliente = ViewBag.Cliente as Models.Cliente;
+    var compraProcesada = ViewBag.CompraProcesada as bool?;
+}
+
+<h2>Finalizar Compra</h2>
+
+@if (compraProcesada == true)
+{
+    <h2>Gracias por tu compra!</h2>
+    <p>Tu orden ha sido procesada exitosamente.</p>
+}
+else
+{
+    <form asp-action="ProcesarCompra" method="post">
+        @if (usuarioAutenticado == true)
+        {
+            <div>
+                <label>Nombre:</label>
+                <input type="text" name="nombre" value="@cliente.Nombre" readonly />
+            </div>
+            <div>
+                <label>Apellido:</label>
+                <input type="text" name="apellido" value="@cliente.Apellido" readonly />
+            </div>
+            <div>
+                <label>Dirección de Entrega:</label>
+                <select name="direccionId">
+                    @foreach (var direccion in cliente.Direccions)
+                    {
+                        <option value="@direccion.DireccionId">@direccion.Descripcion.ToString()</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label>Tarjeta:</label>
+                <select name="tarjetaId">
+                    @foreach (var tarjeta in cliente.Tarjeta)
+                    {
+                        <option value="@tarjeta.TarjetaId">@tarjeta.Numero (Vence @tarjeta.FechaVencimiento)</option>
+                    }
+                </select>
+            </div>
+        }
+        else
+        {
+            <div>
+                <label>Nombre:</label>
+                <input type="text" name="nombre" required />
+            </div>
+            <div>
+                <label>Apellido:</label>
+                <input type="text" name="apellido" required />
+            </div>
+            <div>
+                <label>Dirección de Entrega:</label>
+                <input type="text" name="direccion" required />
+            </div>
+            <div>
+                <label>Ciudad:</label>
+                <input type="text" name="ciudad" required />
+            </div>
+            <div>
+                <label>Código Postal:</label>
+                <input type="text" name="codigoPostal" required />
+            </div>
+            <div>
+                <label>Número de Tarjeta:</label>
+                <input type="text" name="numeroTarjeta" required />
+            </div>
+            <div>
+                <label>CVC:</label>
+                <input type="text" name="cvc" required />
+            </div>
+            <div>
+                <label>Fecha de Vencimiento:</label>
+                <input type="date" name="fechaVencimiento" required />
+            </div>
+        }
+
+        <button type="submit">Finalizar Compra</button>
+    </form>
+}

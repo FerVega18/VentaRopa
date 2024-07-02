@@ -3,24 +3,56 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BL
 {
-    public class UsuarioBL
+    public class DireccionesBL
     {
-        private UsuarioDA usuarioDA;
+        private DireccionesDA direccionesDA;
 
-        public UsuarioBL(DbAa96f3VentaropaContext context)
+        public DireccionesBL(DbAa96f3VentaropaContext context)
         {
-            usuarioDA = new UsuarioDA(context);
+            direccionesDA = new DireccionesDA(context);
+
         }
 
-        public string Agregar(Usuario usuario)
+        public int EditarDireccion(Direccion direccion, int clienteID)
         {
             try
             {
-                return usuarioDA.Agregar(usuario);
+
+
+                return direccionesDA.EditarDireccion(direccion, clienteID);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public int EliminarDireccion(int clienteID)
+        {
+            try
+            {
+                return direccionesDA.EliminarDireccion(clienteID);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public Direccion obtenerDireccionPorCliente(int clienteID)
+        {
+            try
+            {
+                return direccionesDA.obtenerDireccionPorCliente(clienteID);
             }
             catch (Exception ex)
             {
@@ -28,36 +60,11 @@ namespace BL
             }
         }
 
-        public Usuario ObtenerUsuario(string nombreUsuario, string contrasena)
+        public int AgregarDireccion(Direccion direccion)
         {
             try
             {
-                return  usuarioDA.ObtenerUsuario(nombreUsuario, contrasena);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<List<Usuario>> ObtenerTodos()
-        {
-            try
-            {
-                 return await usuarioDA.ObtenerTodos();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public Usuario obtenerUsuarioPorNombre(string nombreUsuario)
-        {
-            try
-            {
-                return usuarioDA.obtenerUsuarioPorNombre(nombreUsuario);
-
+                return direccionesDA.AgregarDireccion(direccion);
             }
             catch (Exception ex)
             {

@@ -102,54 +102,12 @@ namespace BL
             }
         }
 
-        //Si se implementa una nueva tabla llamada Direcciones, de aquí para abajo se elimina y se crea una nueva clase
-        public int AgregarDirecciones(Direccion direccion, int clienteID)
-        { //Implica una nueva tabla direcciones
-            try
-            {
-                return clienteDA.AgregarDirecciones(direccion, clienteID);
-
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public int EditarDireccion(Direccion direccion, int clienteID)
+        public Cliente obtenerClientePorUsuario(string nombreUsuario)
         {
             try
             {
+                return clienteDA.obtenerClientePorUsuario(nombreUsuario);
 
-                return clienteDA.EditarDireccion(direccion, clienteID);
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public int EliminarDireccion(int clienteID)
-        {
-            try
-            {
-                return clienteDA.EliminarDireccion(clienteID);
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public int AgregarDireccion(Direccion direccion)
-        {
-            try
-            {
-                return clienteDA.AgregarDireccion(direccion);
             }
             catch (Exception ex)
             {
@@ -157,29 +115,7 @@ namespace BL
             }
         }
 
-        public int EditarDireccion(Direccion direccion)
-        {
-            try
-            {
-                return clienteDA.EditarDireccion(direccion);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public int EliminarDireccion(Direccion direccion)
-        {
-            try
-            {
-                return clienteDA.EliminarDireccion(direccion);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
 
     }
+   
 }
