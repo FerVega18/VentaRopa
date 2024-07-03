@@ -27,4 +27,8 @@
     <Folder Include="wwwroot\Imagenes\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\css\Carrito.css" />
+  </ItemGroup>
+
 </Project>

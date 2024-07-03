@@ -41,8 +41,12 @@ public class CarritoController : Controller
             }
         }
 
+        // Guardar la cantidad de productos en el carrito en ViewData
+        ViewData["CantidadProductosCarrito"] = productosCarrito.Sum(item => item.cantidad);
+
         return View(productosCarrito);
     }
+
 
     [HttpPost]
     public IActionResult Eliminar(int productoId)

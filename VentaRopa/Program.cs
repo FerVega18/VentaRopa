@@ -34,8 +34,11 @@ builder.Services.AddScoped<TarjetasBL>();
 builder.Services.AddScoped<OrdenesBL>();
 builder.Services.AddScoped<DetallesOrdenBL>();
 builder.Services.AddScoped<DetallesOrdenDA>();
-builder.Services.AddScoped<DireccionesBL>();
-builder.Services.AddScoped<ClienteBL>();
+// Registro del servicio de carrito
+builder.Services.AddScoped<ICarritoService, CarritoService>();
+
+
+
 
 // Registrar IHttpContextAccessor
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

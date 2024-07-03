@@ -1,0 +1,13 @@
+﻿/* Cambiar el color del texto "Carrito" cuando el carrito no esté vacío */
+.navbar-nav .nav-link.text-dark.carrito-no-vacio {
+    color: red;
+}
+
+/* Estilo adicional para el número de productos cuando el carrito no esté vacío */
+.carrito-cantidad.carrito-no-vacio {
+    color: red;
+}
+
+.carrito-no-vacio {
+    color: red;
+}
