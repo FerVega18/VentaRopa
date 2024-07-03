@@ -50,10 +50,7 @@
                         </td>
                         <td>₡@(Model[i].producto.Precio * Model[i].cantidad)</td>
                         <td>
-                            <form asp-action="Eliminar" method="post" style="display:inline;">
-                                <input type="hidden" name="productoId" value="@Model[i].producto.ProductoId" />
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
-                            </form>
+                            <button type="submit" name="productoId" value="@Model[i].producto.ProductoId" formaction="@Url.Action("Eliminar", "Carrito")" formmethod="post" class="btn btn-danger" onclick="return confirm('¿Está seguro que desea eliminar este producto del carrito?');">Eliminar</button>
                         </td>
                     </tr>
                 }
@@ -77,3 +74,10 @@
 
     <a asp-action="Lista" class="btn btn-secondary" style="margin-top: 10px;">Seguir Comprando</a>
 }
+else
+{
+    <div class="alert alert-info" role="alert">
+        Tu carrito de compras está vacío.
+    </div>
+}
+

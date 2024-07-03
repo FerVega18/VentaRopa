@@ -45,7 +45,6 @@ public class CarritoController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public IActionResult Eliminar(int productoId)
     {
         var session = _httpContextAccessor.HttpContext.Session;
@@ -59,6 +58,7 @@ public class CarritoController : Controller
 
         return RedirectToAction("Index");
     }
+
 
     [HttpPost]
     public async Task<IActionResult> Actualizar(List<CarritoProducto> productos)
@@ -94,6 +94,7 @@ public class CarritoController : Controller
 
         return RedirectToAction("Index");
     }
+
 
     [HttpPost]
     public async Task<IActionResult> Compra(List<CarritoProducto> productos)
