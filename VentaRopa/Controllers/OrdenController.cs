@@ -1,20 +1,23 @@
 ﻿using BL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Models;
+using Newtonsoft.Json;
 using System.Linq;
 
+//--Ya tiene todas las validaciones--
 public class OrdenController : Controller
 {
-    private readonly DbAa96f3VentaropaContext _context;
     private readonly OrdenesBL _ordenesBL;
     private readonly DetallesOrdenBL _detallesOrdenBL;
     private readonly DireccionesBL _direccionesBL;
     private readonly ClienteBL _clienteBL;
     private readonly UsuarioBL _usuarioBL;
     private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public OrdenController(OrdenesBL ordenesBL, DetallesOrdenBL detallesOrdenBL, IHttpContextAccessor httpContextAccessor, DireccionesBL direccionesBL, ClienteBL clienteBL, UsuarioBL usuarioBL, DbAa96f3VentaropaContext context)
+    private TarjetasBL _tarjetasBL;
+    private ProductosBL _productosBL;
+    public OrdenController(OrdenesBL ordenesBL, DetallesOrdenBL detallesOrdenBL, IHttpContextAccessor httpContextAccessor, DireccionesBL direccionesBL, ClienteBL clienteBL, UsuarioBL usuarioBL, TarjetasBL tarjetasBL, ProductosBL productosBL)
     {
         _ordenesBL = ordenesBL;
         _detallesOrdenBL = detallesOrdenBL;
@@ -22,34 +25,36 @@ public class OrdenController : Controller
         _direccionesBL = direccionesBL;
         _clienteBL = clienteBL;
         _usuarioBL = usuarioBL;
-        _context = context;
+        _tarjetasBL = tarjetasBL;
+        _productosBL = productosBL;
     }
 
-    [HttpGet]
-    public IActionResult Compra()
+    //Accion para verificar si el usuario está logeado antes de realizar la compra
+    public IActionResult Compra(string productos)
     {
-        if (User.Identity.IsAuthenticated)
-        {
-            var usuario = _usuarioBL.obtenerUsuarioPorNombre(User.Identity.Name);
-            var cliente = _clienteBL.obtenerClientePorUsuario(usuario.NombreUsuario);
+        var productosList = JsonConvert.DeserializeObject<List<CarritoProducto>>(productos);
+        ViewBag.Productos = productosList;
 
-            ViewBag.Cliente = cliente;
-            ViewBag.UsuarioAutenticado = true;
-        }
-        else
+        var usuarioAutenticado = User.Identity.IsAuthenticated;
+        Cliente cliente = null;
+
+        if (usuarioAutenticado)
         {
-            ViewBag.UsuarioAutenticado = false;
+            string usuario = User.Identity.Name;
+            cliente = _clienteBL.obtenerClientePorUsuario(usuario);
         }
 
-        ViewBag.CompraProcesada = false; // Inicialmente, la compra no está procesada
-        return View();
+        ViewBag.UsuarioAutenticado = usuarioAutenticado;
+        ViewBag.Cliente = cliente;
+        ViewBag.CompraProcesada = false;
+
+        return View(productosList);
     }
 
     [HttpPost]
-    public IActionResult ProcesarCompra(string nombre, string apellido, string direccion, string ciudad, string codigoPostal, string numeroTarjeta, string cvc, DateOnly fechaVencimiento, int? direccionId, int? tarjetaId, List<CarritoProducto> productos)
+    public IActionResult ProcesarCompra(string nombre, string apellido, string direccion, string numeroTarjeta, string cvc, DateOnly fechaVencimiento, int cedula, int? tarjetaId, List<CarritoProducto> productos)
     {
         Orden orden = null;
-        EstadoOrden estado = new EstadoOrden { Descripcion = "En proceso" };
 
         if (User.Identity.IsAuthenticated)
         {
@@ -65,43 +70,81 @@ public class OrdenController : Controller
                 OrdenFecha = DateOnly.FromDateTime(DateTime.Now),
                 NombreD = nombre,
                 DireccionD = direccionEntrega.Descripcion,
-                EstadoId = estado.EstadoId
+                EstadoId = 3,
             };
         }
         else
         {
-            orden = new Orden
+            Cliente clienteExistente = _clienteBL.ObtenerPorId(cedula);
+            if (clienteExistente != null)
             {
-                OrdenFecha = DateOnly.FromDateTime(DateTime.Now),
-                NombreD = nombre,
-            };
+                TempData["AlertaClienteRegistrado"] = "Parece que ya tienes una cuenta. ¡Inicia sesión!";
+                return View("Compra",productos);
+
+            }
+            else
+            {
+                Cliente cliente = new Cliente
+                {
+                    ClienteId = cedula,
+                    Nombre = nombre,
+                    Apellido = apellido,
+                };
+                _clienteBL.CrearCliente(cliente, "", true);
+
+                Direccion direccionCliente = new Direccion
+                {
+                    ClienteId = cedula,
+                    Descripcion = direccion,
+                };
+                _direccionesBL.AgregarDireccion(direccionCliente, cedula);
+                orden = new Orden
+                {
+
+                    ClienteId = cedula,
+                    OrdenFecha = DateOnly.FromDateTime(DateTime.Now),
+                    NombreD = nombre,
+                    DireccionD = direccion,
+                    EstadoId = 3,
+                };
+
+                Tarjeta tarjetaCliente = new Tarjeta
+                {
+                    Numero = numeroTarjeta,
+                    Cvc = cvc,
+                    FechaVencimiento = fechaVencimiento,
+                };
+                _tarjetasBL.Agregar(tarjetaCliente);
+                _ordenesBL.Agregar(orden);
+            }
+            
+
         }
 
         // Guardar orden y detalles de la orden
-        _ordenesBL.Agregar(orden, orden.Estado);
-        // Agregar detalles de la orden utilizando las cantidades proporcionadas
+
         foreach (var item in productos)
         {
-            var producto = _context.Productos.FirstOrDefault(p => p.ProductoId == item.productoId);
+            Producto producto = _productosBL.obtenerPorId(item.productoId);
             if (producto != null)
             {
                 var detallesOrden = new DetallesOrden
                 {
-                    OrdenId = orden.OrdenId,
+                    
                     ProductoId = producto.ProductoId,
                     Cantidad = item.cantidad,
                     Precio = producto.Precio
                 };
 
-                _detallesOrdenBL.Agregar(detallesOrden);
+                _detallesOrdenBL.Agregar(detallesOrden,orden.OrdenId);
             }
         }
 
-
         ViewBag.CompraProcesada = true;
-        return RedirectToAction("Confirmacion");
+        return View("Compra");
     }
 }
+
 
 
 

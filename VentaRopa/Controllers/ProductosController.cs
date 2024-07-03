@@ -123,7 +123,7 @@ namespace VentaRopa.Controllers
         //Método para mostrar detalles de un producto
         public async Task<IActionResult> Details(int id)
         {
-            var producto = await _productosBL.obtenerPorId(id);
+            var producto =  _productosBL.obtenerPorId(id);
 
             if (producto == null)
             {
@@ -138,7 +138,7 @@ namespace VentaRopa.Controllers
         [HttpGet]
         public async Task<IActionResult> Editar(int id)
         {
-            var producto = await _productosBL.obtenerPorId(id);
+            var producto =  _productosBL.obtenerPorId(id);
             if (producto == null)
             {
                 return NotFound();
@@ -199,7 +199,7 @@ namespace VentaRopa.Controllers
         [HttpPost]
         public async Task<IActionResult> Eliminar(int id)
         {
-            var producto = await _productosBL.obtenerPorId(id);
+            var producto =  _productosBL.obtenerPorId(id);
             if (producto == null)
             {
                 return NotFound();

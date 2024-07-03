@@ -75,11 +75,11 @@ namespace DA
             }
         }
 
-        public async Task<Producto> ObtenerPorId(int id)
+        public Producto ObtenerPorId(int id)
         {
             try
             {
-                return await _dbContext.Productos.FirstOrDefaultAsync(p => p.ProductoId == id);
+                return  _dbContext.Productos.FirstOrDefault(p => p.ProductoId == id);
             }
             catch (Exception ex)
             {
@@ -105,7 +105,7 @@ namespace DA
         {
             try
             {
-                Producto productoExistente = await ObtenerPorId(id);
+                Producto productoExistente =  ObtenerPorId(id);
                 if (productoExistente != null)
                 {
                     productoExistente.CategoriaId = producto.CategoriaId;

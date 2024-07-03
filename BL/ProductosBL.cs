@@ -30,11 +30,11 @@ namespace BL
         }
 
 
-        public async Task<Producto> obtenerPorId(int id)
+        public  Producto obtenerPorId(int id)
         {
             try
             {
-                return await productosDA.ObtenerPorId(id);
+                return  productosDA.ObtenerPorId(id);
             }
             catch (Exception error)
             {

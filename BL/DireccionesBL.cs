@@ -12,11 +12,12 @@ namespace BL
     public class DireccionesBL
     {
         private DireccionesDA direccionesDA;
+        private ClienteDA clienteDA;
 
         public DireccionesBL(DbAa96f3VentaropaContext context)
         {
             direccionesDA = new DireccionesDA(context);
-
+            clienteDA = new ClienteDA(context) ;
         }
 
         public int EditarDireccion(Direccion direccion, int clienteID)
@@ -60,10 +61,11 @@ namespace BL
             }
         }
 
-        public int AgregarDireccion(Direccion direccion)
+        public int AgregarDireccion(Direccion direccion, int cliente)
         {
             try
             {
+               direccion.ClienteId =  clienteDA.ObtenerPorId(cliente).ClienteId;
                 return direccionesDA.AgregarDireccion(direccion);
             }
             catch (Exception ex)

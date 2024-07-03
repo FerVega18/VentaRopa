@@ -32,6 +32,7 @@
                     <th>Precio</th>
                     <th>Cantidad</th>
                     <th>Total</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,6 +49,12 @@
                             <input type="number" name="productos[@i].cantidad" value="@Model[i].cantidad" min="1" max="@Model[i].producto.Stock" class="form-control" style="width: 80px; display: inline-block;" />
                         </td>
                         <td>₡@(Model[i].producto.Precio * Model[i].cantidad)</td>
+                        <td>
+                            <form asp-action="Eliminar" method="post" style="display:inline;">
+                                <input type="hidden" name="productoId" value="@Model[i].producto.ProductoId" />
+                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                            </form>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -60,12 +67,13 @@
     </form>
 
     <form asp-action="Compra" method="post" style="margin-top: 10px;">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <input type="hidden" name="productos[@i].productoId" value="@Model[i].producto.ProductoId" />
+            <input type="hidden" name="productos[@i].cantidad" value="@Model[i].cantidad" />
+        }
         <button type="submit" class="btn btn-success">Comprar</button>
     </form>
 
     <a asp-action="Lista" class="btn btn-secondary" style="margin-top: 10px;">Seguir Comprando</a>
 }
-
-
-
-

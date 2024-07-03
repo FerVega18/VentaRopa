@@ -1,85 +1,180 @@
-﻿@{
+﻿@model List<Models.CarritoProducto>
+
+@{
     ViewData["Title"] = "Compra";
     var usuarioAutenticado = ViewBag.UsuarioAutenticado as bool?;
     var cliente = ViewBag.Cliente as Models.Cliente;
     var compraProcesada = ViewBag.CompraProcesada as bool?;
 }
 
-<h2>Finalizar Compra</h2>
+@if (TempData["AlertaClienteRegistrado"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["AlertaClienteRegistrado"]
+    </div>
+}
 
 @if (compraProcesada == true)
 {
-    <h2>Gracias por tu compra!</h2>
-    <p>Tu orden ha sido procesada exitosamente.</p>
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Gracias por tu compra!</h4>
+        <p>Tu orden ha sido procesada exitosamente.</p>
+    </div>
 }
 else
 {
-    <form asp-action="ProcesarCompra" method="post">
-        @if (usuarioAutenticado == true)
+    <h2>Finalizar Compra</h2>
+    <form asp-action="ProcesarCompra" method="post" class="needs-validation" novalidate>
+        <div class="row">
+            @if (usuarioAutenticado == true)
+            {
+                <div class="col-md-6 mb-3">
+                    <label for="cedula">Cédula</label>
+                    <input type="text" class="form-control" id="cedula" name="cedula" value="@cliente.ClienteId" readonly>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="@cliente.Nombre" readonly>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" name="apellido" value="@cliente.Apellido" readonly>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="direccionId">Dirección de Entrega</label>
+                    <select class="form-control" id="direccionId" name="direccionId" required>
+                        @foreach (var direccion in cliente.Direccions)
+                        {
+                            <option value="@direccion.DireccionId">@direccion.Descripcion</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione su dirección de entrega.
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="tarjetaId">Tarjeta</label>
+                    <select class="form-control" id="tarjetaId" name="tarjetaId" required>
+                        @foreach (var tarjeta in cliente.Tarjeta)
+                        {
+                            <option value="@tarjeta.TarjetaId">@tarjeta.Numero (Vence @tarjeta.FechaVencimiento)</option>
+                        }
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione su tarjeta.
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-6 mb-3">
+                    <label for="cedula">Cédula</label>
+                    <input type="text" class="form-control" id="cedula" name="cedula" required>
+                    <div class="invalid-feedback">
+                        Por favor, ingrese su cédula.
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    <div class="invalid-feedback">
+                        Por favor, ingrese su nombre.
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" name="apellido" required>
+                    <div class="invalid-feedback">
+                        Por favor, ingrese su apellido.
+                    </div>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <label for="direccion">Dirección de Entrega</label>
+                    <input type="text" class="form-control" id="direccion" name="direccion" required>
+                    <div class="invalid-feedback">
+                        Por favor, ingrese su dirección de entrega.
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="numeroTarjeta">Número de Tarjeta</label>
+                    <input type="text" class="form-control" id="numeroTarjeta" name="numeroTarjeta" required>
+                    <div class="invalid-feedback">
+                        Por favor, ingrese su número de tarjeta.
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="cvc">CVC</label>
+                    <input type="text" class="form-control" id="cvc" name="cvc" maxlength="3" required>
+                    <div class="invalid-feedback">
+                        Por favor, ingrese el CVC.
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="fechaVencimiento">Fecha de Vencimiento</label>
+                    <input type="date" class="form-control" id="fechaVencimiento" name="fechaVencimiento" required>
+                    <div class="invalid-feedback">
+                        Por favor, ingrese la fecha de vencimiento.
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div id="alertaTarjetaVencida" class="alert alert-danger" style="display:none;">
+            La tarjeta está vencida.
+        </div>
+
+        <hr class="mb-4">
+
+        @for (int i = 0; i < Model?.Count; i++)
         {
-            <div>
-                <label>Nombre:</label>
-                <input type="text" name="nombre" value="@cliente.Nombre" readonly />
-            </div>
-            <div>
-                <label>Apellido:</label>
-                <input type="text" name="apellido" value="@cliente.Apellido" readonly />
-            </div>
-            <div>
-                <label>Dirección de Entrega:</label>
-                <select name="direccionId">
-                    @foreach (var direccion in cliente.Direccions)
-                    {
-                        <option value="@direccion.DireccionId">@direccion.Descripcion.ToString()</option>
-                    }
-                </select>
-            </div>
-            <div>
-                <label>Tarjeta:</label>
-                <select name="tarjetaId">
-                    @foreach (var tarjeta in cliente.Tarjeta)
-                    {
-                        <option value="@tarjeta.TarjetaId">@tarjeta.Numero (Vence @tarjeta.FechaVencimiento)</option>
-                    }
-                </select>
-            </div>
-        }
-        else
-        {
-            <div>
-                <label>Nombre:</label>
-                <input type="text" name="nombre" required />
-            </div>
-            <div>
-                <label>Apellido:</label>
-                <input type="text" name="apellido" required />
-            </div>
-            <div>
-                <label>Dirección de Entrega:</label>
-                <input type="text" name="direccion" required />
-            </div>
-            <div>
-                <label>Ciudad:</label>
-                <input type="text" name="ciudad" required />
-            </div>
-            <div>
-                <label>Código Postal:</label>
-                <input type="text" name="codigoPostal" required />
-            </div>
-            <div>
-                <label>Número de Tarjeta:</label>
-                <input type="text" name="numeroTarjeta" required />
-            </div>
-            <div>
-                <label>CVC:</label>
-                <input type="text" name="cvc" required />
-            </div>
-            <div>
-                <label>Fecha de Vencimiento:</label>
-                <input type="date" name="fechaVencimiento" required />
-            </div>
+            <input type="hidden" name="productos[@i].productoId" value="@Model[i].productoId" />
+            <input type="hidden" name="productos[@i].cantidad" value="@Model[i].cantidad" />
         }
 
-        <button type="submit">Finalizar Compra</button>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Finalizar Compra</button>
     </form>
 }
+
+<script>
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+
+                    // Validar fecha de vencimiento de la tarjeta
+                    var fechaVencimientoInput = document.getElementById('fechaVencimiento');
+                    var fechaVencimiento = new Date(fechaVencimientoInput.value + 'T00:00');
+                    var hoy = new Date();
+                    hoy.setHours(0, 0, 0, 0);
+
+                    if (fechaVencimiento < hoy) {
+                        document.getElementById('alertaTarjetaVencida').style.display = 'block';
+                        event.preventDefault();
+                        event.stopPropagation();
+                    } else {
+                        document.getElementById('alertaTarjetaVencida').style.display = 'none';
+                    }
+
+                    // Validar longitud del CVC
+                    var cvcInput = document.getElementById('cvc');
+                    if (cvcInput.value.length !== 3) {
+                        cvcInput.setCustomValidity("El CVC debe tener 3 dígitos.");
+                        cvcInput.reportValidity();
+                        event.preventDefault();
+                        event.stopPropagation();
+                    } else {
+                        cvcInput.setCustomValidity("");
+                    }
+
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

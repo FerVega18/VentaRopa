@@ -22,23 +22,28 @@ namespace BL
 
         }
 
-        public int CrearCliente(Cliente cliente, string contraseña)
+        public int CrearCliente(Cliente cliente, string contraseña, bool sinUsuario)
         {
             try
             {
-                // Validar el usuario
-                var usuario = _usuarioBL.ObtenerUsuario(cliente.NombreUsuario, contraseña);
-
-                if (usuario == null)
+                if (!sinUsuario)
                 {
-                    throw new Exception("Usuario o contraseña incorrectos.");
+                    // Validar el usuario
+                    var usuario = _usuarioBL.ObtenerUsuario(cliente.NombreUsuario, contraseña);
+
+                    if (usuario == null)
+                    {
+                        throw new Exception("Usuario o contraseña incorrectos.");
+                    }
+                   
+                    // Asignar el usuario al cliente
+                    cliente.NombreUsuarioNavigation = usuario;
+
+                    // Crear el cliente
+                    return clienteDA.Agregar(cliente);
                 }
-
-                // Asignar el usuario al cliente
-                cliente.NombreUsuarioNavigation = usuario;
-
-                // Crear el cliente
                 return clienteDA.Agregar(cliente);
+                
             }
             catch (Exception ex)
             {

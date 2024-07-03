@@ -19,13 +19,12 @@ namespace BL
             ordenesDA = new OrdenesDA(context);
         }
 
-        public int Agregar(Orden orden, EstadoOrden estado)
+        public int Agregar(Orden orden)
         {
             try
             {
-                orden.EstadoId = estado.EstadoId;
-                orden.Estado = estado;
-                return ordenesDA.Agregar(orden,estado);
+                
+                return ordenesDA.Agregar(orden);
             }
             catch (Exception ex)
             {

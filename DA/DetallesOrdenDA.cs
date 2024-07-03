@@ -20,6 +20,7 @@ namespace DA
         {
             try { 
               _dbContext.DetallesOrdens.Add(orden);
+                _dbContext.SaveChanges();
                 return orden.OrdenId;
             } catch (Exception ex) {
                 throw new Exception(ex.Message);

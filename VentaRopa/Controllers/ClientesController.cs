@@ -53,7 +53,7 @@ namespace VentaRopa.Controllers
                     cliente.NombreUsuarioNavigation = usuario;
 
                     // Crear el cliente
-                    _clienteBL.CrearCliente(cliente, contraseña);
+                    _clienteBL.CrearCliente(cliente, contraseña,false);
 
                     return RedirectToAction("Lista", "Productos");
                 }

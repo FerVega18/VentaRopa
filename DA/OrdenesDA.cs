@@ -17,10 +17,11 @@ namespace DA
             _dbContext = dbContext;
         }
 
-        public int Agregar(Orden orden, EstadoOrden estado) {
+        public int Agregar(Orden orden) {
             try {
                 _dbContext.Ordens.Add(orden);
-                _dbContext.EstadoOrdens.Add(estado);
+                _dbContext.SaveChanges();
+
                 return orden.OrdenId;
             
             } catch (Exception ex) {

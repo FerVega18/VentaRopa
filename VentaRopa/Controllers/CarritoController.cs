@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 public class CarritoController : Controller
 {
@@ -33,7 +34,7 @@ public class CarritoController : Controller
 
         foreach (var item in carrito)
         {
-            var producto = await _productosBL.obtenerPorId(item.Key);
+            var producto = _productosBL.obtenerPorId(item.Key);
             if (producto != null)
             {
                 productosCarrito.Add((producto, item.Value));
@@ -44,6 +45,7 @@ public class CarritoController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Eliminar(int productoId)
     {
         var session = _httpContextAccessor.HttpContext.Session;
@@ -66,7 +68,7 @@ public class CarritoController : Controller
 
         foreach (var item in productos)
         {
-            var producto = await _productosBL.obtenerPorId(item.productoId);
+            var producto = _productosBL.obtenerPorId(item.productoId);
             if (producto == null)
             {
                 continue;
@@ -94,19 +96,15 @@ public class CarritoController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Compra()
+    public async Task<IActionResult> Compra(List<CarritoProducto> productos)
     {
-        var session = _httpContextAccessor.HttpContext.Session;
-        var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
-
-        if (carrito.Count == 0)
+        if (productos == null || productos.Count == 0)
         {
             TempData["CarritoVacio"] = "Tu carrito de compras está vacío.";
             return RedirectToAction("Index");
         }
 
         var usuarioAutenticado = User.Identity.IsAuthenticated;
-
         Cliente cliente = null;
 
         if (usuarioAutenticado)
@@ -119,12 +117,7 @@ public class CarritoController : Controller
         ViewBag.Cliente = cliente;
         ViewBag.CompraProcesada = false;
 
-        return RedirectToAction("Compra", "Orden"); // Redirigir al controlador de Orden
+        // Pasar los productos como parámetro al controlador Ordenes
+        return RedirectToAction("Compra", "Orden", new { productos = JsonConvert.SerializeObject(productos) });
     }
-}
-
-public class CarritoProducto
-{
-    public int productoId { get; set; }
-    public int cantidad { get; set; }
 }

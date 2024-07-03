@@ -27,10 +27,13 @@ builder.Services.AddScoped<UsuarioDA>();
 builder.Services.AddScoped<ProductosBL>();
 builder.Services.AddScoped<CategoriasBL>();
 builder.Services.AddScoped<ClienteBL>();
+builder.Services.AddScoped<DireccionesDA>();
+builder.Services.AddScoped<DireccionesBL>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<TarjetasBL>();
 builder.Services.AddScoped<OrdenesBL>();
 builder.Services.AddScoped<DetallesOrdenBL>();
+builder.Services.AddScoped<DetallesOrdenDA>();
 builder.Services.AddScoped<DireccionesBL>();
 builder.Services.AddScoped<ClienteBL>();
 

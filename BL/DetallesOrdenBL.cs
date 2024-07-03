@@ -12,17 +12,20 @@ namespace BL
     public class DetallesOrdenBL
     {
         private DetallesOrdenDA detallesOrdenesDA;
+        private OrdenesDA ordenesDA;
 
         public DetallesOrdenBL(DbAa96f3VentaropaContext context)
         {
             detallesOrdenesDA = new DetallesOrdenDA(context);
+            ordenesDA = new OrdenesDA(context);
         }
         ///dfghjklñ
 
-        public int Agregar(DetallesOrden orden)
+        public int Agregar(DetallesOrden orden, int ordenID)
         {
             try
             {
+                orden.OrdenId = ordenID;
                 return detallesOrdenesDA.Agregar(orden);
             }
             catch (Exception ex)
