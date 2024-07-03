@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Lista de Productos";
+    var categorias = ViewBag.Categorias as List<Models.Categoria>;
+    var marcas = ViewBag.Marcas as List<string>;
 }
 
 <h1>Lista de Productos</h1>
@@ -14,13 +16,29 @@
         </div>
         <div class="form-group col-md-4">
             <label for="filter">Filtrar por:</label>
-            <select id="filter" name="filter" class="form-control">
-                <option value="">Seleccionar...</option>
-                <option value="nombre">Nombre</option>
-                <option value="categoria">Categoría</option>
-                <option value="talla">Talla</option>
-                <option value="marca">Marca</option>
-            </select>
+            <div class="d-flex">
+                <select id="filter" name="filter" class="form-control" onchange="toggleSearchOptions()">
+                    <option value="">Seleccionar...</option>
+                    <option value="nombre">Nombre</option>
+                    <option value="categoria">Categoría</option>
+                    <option value="talla">Talla</option>
+                    <option value="marca">Marca</option>
+                </select>
+                <select id="categoriaDropdown" name="categoria" class="form-control ml-2" style="display: none;">
+                    <option value="">Seleccionar Categoría...</option>
+                    @foreach (var categoria in categorias)
+                    {
+                        <option value="@categoria.CategoriaId">@categoria.Descripcion</option>
+                    }
+                </select>
+                <select id="marcaDropdown" name="marca" class="form-control ml-2" style="display: none;">
+                    <option value="">Seleccionar Marca...</option>
+                    @foreach (var marca in marcas)
+                    {
+                        <option value="@marca">@marca</option>
+                    }
+                </select>
+            </div>
         </div>
         <div class="form-group col-md-2 align-self-end">
             <button type="submit" class="btn btn-primary">Buscar</button>
@@ -90,10 +108,27 @@
 </style>
 
 @section Scripts {
+    <script>
+        function toggleSearchOptions() {
+            var filter = document.getElementById("filter").value;
+            var searchQuery = document.getElementById("searchQuery");
+            var categoriaDropdown = document.getElementById("categoriaDropdown");
+            var marcaDropdown = document.getElementById("marcaDropdown");
+
+            searchQuery.style.display = "block";
+            categoriaDropdown.style.display = "none";
+            marcaDropdown.style.display = "none";
+
+            if (filter === "categoria") {
+                searchQuery.style.display = "none";
+                categoriaDropdown.style.display = "block";
+            } else if (filter === "marca") {
+                searchQuery.style.display = "none";
+                marcaDropdown.style.display = "block";
+            }
+        }
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-
-
-

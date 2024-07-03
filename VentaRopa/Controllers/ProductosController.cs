@@ -67,29 +67,48 @@ namespace VentaRopa.Controllers
         }
 
 
-        public async Task<IActionResult> Lista(string searchQuery, string sortOrder, string filter)
+        public async Task<IActionResult> Lista(string searchQuery, string sortOrder, string filter, int? categoria, string marca)
         {
+            // Obtener todos los productos
             var productos = await _productosBL.ObtenerTodos();
 
+            // Obtener todas las categorías y marcas
+            ViewBag.Categorias = await _categoriasBL.ObtenerTodos();
+            ViewBag.Marcas = productos.Select(p => p.Marca).Distinct().ToList();
 
             // Aplicar filtros de búsqueda
-            if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(filter))
+            if (!string.IsNullOrEmpty(filter))
             {
-                searchQuery = searchQuery.ToLower();
-
                 switch (filter.ToLower())
                 {
                     case "nombre":
-                        productos = productos.Where(p => p.Descripcion.ToLower().Contains(searchQuery)).ToList();
+                        if (!string.IsNullOrEmpty(searchQuery))
+                        {
+                            searchQuery = searchQuery.ToLower();
+                            productos = productos.Where(p => p.Descripcion.ToLower().Contains(searchQuery)).ToList();
+                        }
                         break;
+
                     case "categoria":
-                        productos = productos.Where(p => p.Categoria.Descripcion.ToLower().Contains(searchQuery)).ToList();
+                        if (categoria.HasValue)
+                        {
+                            productos = productos.Where(p => p.CategoriaId == categoria.Value).ToList();
+                        }
                         break;
+
                     case "talla":
-                        productos = productos.Where(p => p.Talla.ToLower().Contains(searchQuery)).ToList();
+                        if (!string.IsNullOrEmpty(searchQuery))
+                        {
+                            searchQuery = searchQuery.ToLower();
+                            productos = productos.Where(p => p.Talla.ToLower().Contains(searchQuery)).ToList();
+                        }
                         break;
+
                     case "marca":
-                        productos = productos.Where(p => p.Marca.ToLower().Contains(searchQuery)).ToList();
+                        if (!string.IsNullOrEmpty(marca))
+                        {
+                            productos = productos.Where(p => p.Marca.ToLower() == marca.ToLower()).ToList();
+                        }
                         break;
                 }
             }
@@ -111,13 +130,11 @@ namespace VentaRopa.Controllers
                     break;
             }
 
-            // Pasar los valores a la vista a través de ViewData
-            ViewData["searchQuery"] = searchQuery;
-            ViewData["sortOrder"] = sortOrder;
-            ViewData["filter"] = filter;
-
             return View(productos);
         }
+
+
+
 
 
         //Método para mostrar detalles de un producto
