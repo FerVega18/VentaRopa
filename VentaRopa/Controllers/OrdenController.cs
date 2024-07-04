@@ -1,4 +1,5 @@
 ﻿using BL;
+using DA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -136,12 +137,74 @@ public class OrdenController : Controller
                     Precio = producto.Precio
                 };
 
-                _detallesOrdenBL.Agregar(detallesOrden,orden.OrdenId);
+                _detallesOrdenBL.Agregar(detallesOrden, orden.OrdenId);
             }
         }
 
         ViewBag.CompraProcesada = true;
         return View("Compra");
+    }
+
+
+
+
+public IActionResult Index()
+    {
+        // Obtener todas las órdenes
+        List<Orden> ordenes = _ordenesBL.ObtenerTodasOrdenes();
+
+        // Cargar propiedades de navegación necesarias
+        foreach (var orden in ordenes)
+        {
+            if (orden.ClienteId.HasValue)
+            {
+                orden.Cliente = _clienteBL.ObtenerPorId(orden.ClienteId.Value);
+            }
+        }
+
+        return View(ordenes);
+    }
+
+    [HttpGet]
+    public IActionResult Buscar(string criterioBusqueda, int? numeroOrden, string correoUsuario, DateOnly? fechaInicio, DateOnly? fechaFin, string nombreCliente, int? clienteId)
+    {
+        List<Orden> ordenes = new List<Orden>();
+
+        if (criterioBusqueda == "numeroOrden" && numeroOrden.HasValue)
+        {
+            var orden = _ordenesBL.ObtenerPorNumero(numeroOrden.Value);
+            if (orden != null)
+            {
+                ordenes.Add(orden);
+            }
+        }
+        else if (criterioBusqueda == "correoUsuario" && !string.IsNullOrEmpty(correoUsuario))
+        {
+            ordenes = _ordenesBL.ObtenerPorCorreoUsuario(correoUsuario);
+        }
+        else if (criterioBusqueda == "fecha" && fechaInicio.HasValue && fechaFin.HasValue)
+        {
+            ordenes = _ordenesBL.ObtenerPorFecha(fechaInicio.Value, fechaFin.Value);
+        }
+        else if (criterioBusqueda == "nombreCliente" && !string.IsNullOrEmpty(nombreCliente))
+        {
+            ordenes = _ordenesBL.ObtenerPorNombreCliente(nombreCliente);
+        }
+        else if (criterioBusqueda == "clienteId" && clienteId.HasValue)
+        {
+            ordenes = _ordenesBL.ObtenerPorIdCliente(clienteId.Value);
+        }
+
+        // Cargar propiedades de navegación necesarias
+        foreach (var orden in ordenes)
+        {
+            if (orden.ClienteId.HasValue)
+            {
+                orden.Cliente = _clienteBL.ObtenerPorId(orden.ClienteId.Value);
+            }
+        }
+
+        return View("Index", ordenes);
     }
 }
 

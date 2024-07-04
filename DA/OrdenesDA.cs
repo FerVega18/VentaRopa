@@ -54,5 +54,52 @@ namespace DA
                 throw new Exception(ex.Message);
             }
         }
+
+        public Orden ObtenerPorNumero(int numeroOrden)
+        {
+            return _dbContext.Ordens.FirstOrDefault(o => o.OrdenId == numeroOrden);
+        }
+
+        public List<Orden> ObtenerPorCorreoUsuario(string correoUsuario)
+        {
+            try
+            {
+                return _dbContext.Ordens.Where(o => o.NombreD == correoUsuario).ToList();
+            }catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }   
+            
+        }
+
+        public List<Orden> ObtenerPorNombreCliente(string nombreCliente)
+        {
+            try
+            {
+                return _dbContext.Ordens
+                    .Include(o => o.Cliente)
+                    .Where(o => o.Cliente.Nombre.Contains(nombreCliente) || o.Cliente.Apellido.Contains(nombreCliente))
+                    .ToList();
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public List<Orden> ObtenerPorIdCliente(int clienteId)
+        {
+            try { 
+                return _dbContext.Ordens.Where(o => o.ClienteId == clienteId).ToList();
+            } catch(Exception ex)
+            {
+                throw new Exception(ex.Message + " " + clienteId);
+            }
+        }
+
+        public List<Orden> ObtenerTodasOrdenes()
+        {
+            return _dbContext.Ordens.OrderBy(o => o.OrdenFecha).ToList();
+        }
+
     }
 }

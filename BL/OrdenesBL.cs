@@ -44,6 +44,66 @@ namespace BL
             }
         }
 
-       
+        public Orden ObtenerPorNumero(int numeroOrden)
+        {
+            try
+            {
+                return ordenesDA.ObtenerPorNumero(numeroOrden);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener la orden por número: " + ex.Message);
+            }
+        }
+
+        public List<Orden> ObtenerPorCorreoUsuario(string correoUsuario)
+        {
+            try
+            {
+                return ordenesDA.ObtenerPorCorreoUsuario(correoUsuario);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las órdenes por correo de usuario: " + ex.Message);
+            }
+        }
+
+        public List<Orden> ObtenerPorNombreCliente(string nombreCliente)
+        {
+            try
+            {
+                return ordenesDA.ObtenerPorNombreCliente(nombreCliente);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las órdenes por nombre de cliente: " + ex.Message);
+            }
+        }
+
+        public List<Orden> ObtenerPorIdCliente(int clienteId)
+        {
+            try
+            {
+                return ordenesDA.ObtenerPorIdCliente(clienteId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las órdenes por ID de cliente: " + ex.Message);
+            }
+        }
+
+        public List<Orden> ObtenerTodasOrdenes()
+        {
+            try
+            {
+                return ordenesDA.ObtenerTodasOrdenes();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener todas las órdenes: " + ex.Message);
+            }
+        }
+
+
     }
 }
