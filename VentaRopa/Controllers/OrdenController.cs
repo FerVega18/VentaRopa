@@ -103,6 +103,7 @@ public class OrdenController : Controller
                 {
 
                     ClienteId = cedula,
+                    Cliente = cliente,
                     OrdenFecha = DateOnly.FromDateTime(DateTime.Now),
                     NombreD = nombre,
                     DireccionD = direccion,
@@ -131,13 +132,15 @@ public class OrdenController : Controller
             {
                 var detallesOrden = new DetallesOrden
                 {
-                    
                     ProductoId = producto.ProductoId,
+                    Producto = producto,
+                    OrdenId = orden.OrdenId,
+                    Orden = orden,
                     Cantidad = item.cantidad,
                     Precio = producto.Precio
                 };
 
-                _detallesOrdenBL.Agregar(detallesOrden, orden.OrdenId);
+                _detallesOrdenBL.Agregar(detallesOrden);
             }
         }
 
@@ -148,64 +151,58 @@ public class OrdenController : Controller
 
 
 
-public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        // Obtener todas las órdenes
-        List<Orden> ordenes = _ordenesBL.ObtenerTodasOrdenes();
+        var detallesOrdenes = _detallesOrdenBL.listarOrdenados();
 
-        // Cargar propiedades de navegación necesarias
-        foreach (var orden in ordenes)
-        {
-            if (orden.ClienteId.HasValue)
-            {
-                orden.Cliente = _clienteBL.ObtenerPorId(orden.ClienteId.Value);
-            }
-        }
-
-        return View(ordenes);
+        return View(detallesOrdenes);
     }
 
     [HttpGet]
-    public IActionResult Buscar(string criterioBusqueda, int? numeroOrden, string correoUsuario, DateOnly? fechaInicio, DateOnly? fechaFin, string nombreCliente, int? clienteId)
+    public IActionResult Buscar(string criterioBusqueda, int numeroOrden, string correoUsuario, DateOnly fecha, string nombreCliente, int? clienteId)
     {
-        List<Orden> ordenes = new List<Orden>();
+        List<DetallesOrden> ordenes = new List<DetallesOrden>();
 
-        if (criterioBusqueda == "numeroOrden" && numeroOrden.HasValue)
+        if (criterioBusqueda == "numeroOrden" && numeroOrden!=null)
         {
-            var orden = _ordenesBL.ObtenerPorNumero(numeroOrden.Value);
-            if (orden != null)
-            {
-                ordenes.Add(orden);
-            }
+             ordenes = _detallesOrdenBL.obtenerPorId(numeroOrden);
         }
         else if (criterioBusqueda == "correoUsuario" && !string.IsNullOrEmpty(correoUsuario))
         {
-            ordenes = _ordenesBL.ObtenerPorCorreoUsuario(correoUsuario);
+            ordenes = _detallesOrdenBL.obtenerPorCorreo(correoUsuario);
         }
-        else if (criterioBusqueda == "fecha" && fechaInicio.HasValue && fechaFin.HasValue)
+        else if (criterioBusqueda == "fecha")
         {
-            ordenes = _ordenesBL.ObtenerPorFecha(fechaInicio.Value, fechaFin.Value);
+            ordenes = _detallesOrdenBL.obtenerPorFecha(fecha);
         }
-        else if (criterioBusqueda == "nombreCliente" && !string.IsNullOrEmpty(nombreCliente))
-        {
-            ordenes = _ordenesBL.ObtenerPorNombreCliente(nombreCliente);
-        }
-        else if (criterioBusqueda == "clienteId" && clienteId.HasValue)
-        {
-            ordenes = _ordenesBL.ObtenerPorIdCliente(clienteId.Value);
-        }
-
-        // Cargar propiedades de navegación necesarias
-        foreach (var orden in ordenes)
-        {
-            if (orden.ClienteId.HasValue)
-            {
-                orden.Cliente = _clienteBL.ObtenerPorId(orden.ClienteId.Value);
-            }
-        }
+   
 
         return View("Index", ordenes);
     }
+
+
+    [HttpPost]
+    public IActionResult Despachar(int ordenId)
+    {
+        DetallesOrden orden = _detallesOrdenBL.BuscarPorId(ordenId);
+
+        if (orden != null)
+        {
+            
+            orden.Orden.EstadoId = 4; //Cambiar el estado a "Enviado"
+
+            
+
+            TempData["MensajeDespacho"] = $"Orden {ordenId} despachada correctamente.";
+        }
+        else
+        {
+            TempData["MensajeDespacho"] = $"Error al despachar la orden {ordenId}.";
+        }
+
+        return RedirectToAction("Index");
+    }
+
 }
 
 

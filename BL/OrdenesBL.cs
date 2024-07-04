@@ -60,7 +60,8 @@ namespace BL
         {
             try
             {
-                return ordenesDA.ObtenerPorCorreoUsuario(correoUsuario);
+                List<Orden> lista = ordenesDA.ObtenerPorCorreoUsuario(correoUsuario);
+                return lista;
             }
             catch (Exception ex)
             {

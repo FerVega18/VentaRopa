@@ -64,7 +64,8 @@ namespace DA
         {
             try
             {
-                return _dbContext.Ordens.Where(o => o.NombreD == correoUsuario).ToList();
+                return  _dbContext.Ordens.Where(o => o.Cliente.NombreUsuario == correoUsuario).ToList();
+               
             }catch (Exception ex)
             {
                 throw new Exception(ex.Message);

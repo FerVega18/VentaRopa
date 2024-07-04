@@ -21,11 +21,11 @@ namespace BL
         }
         
 
-        public int Agregar(DetallesOrden orden, int ordenID)
+        public int Agregar(DetallesOrden orden)
         {
             try
             {
-                orden.OrdenId = ordenID;
+                
                 return detallesOrdenesDA.Agregar(orden);
             }
             catch (Exception ex)
@@ -34,7 +34,22 @@ namespace BL
             }
         }
 
-        public DetallesOrden obtenerPorId(int ordenID)
+        public DetallesOrden BuscarPorId(int numeroOrden)
+        {
+            try
+            {
+                return detallesOrdenesDA.BuscarPorId(numeroOrden);
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los detalles de la orden por número de orden: " + ex.Message);
+            }
+        }
+
+
+        public List<DetallesOrden> obtenerPorId(int ordenID)
         {
             try
             {
@@ -48,7 +63,7 @@ namespace BL
             }
         }
 
-        public DetallesOrden obtenerPorFecha(DateOnly fecha)
+        public List<DetallesOrden> obtenerPorFecha(DateOnly fecha)
         {
             try
             {
@@ -62,7 +77,7 @@ namespace BL
             }
         }
 
-        public DetallesOrden obtenerPorCorreo(String nombre)
+        public List<DetallesOrden> obtenerPorCorreo(String nombre)
         {
             try
             {

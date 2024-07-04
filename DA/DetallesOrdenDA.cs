@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,46 +28,72 @@ namespace DA
             }
         }
 
-        public DetallesOrden obtenerPorId(int ordenID)
-        {
-            try {
-                return _dbContext.DetallesOrdens.FirstOrDefault(d => d.OrdenId == ordenID);
-
-            }
-            catch (Exception ex) 
-            {
-                throw new Exception(ex.Message);
-            
-            }
-        }
-
-        public DetallesOrden obtenerPorFecha(DateOnly fecha)
+        public List<DetallesOrden> obtenerPorId(int numeroOrden)
         {
             try
             {
-                return _dbContext.DetallesOrdens.FirstOrDefault(d => d.Orden.OrdenFecha == fecha);
-
+                return _dbContext.DetallesOrdens
+                                 .Where(d => d.Orden.OrdenId == numeroOrden)
+                                 .Include(d => d.Producto)
+                                 .Include(d => d.Orden)
+                                     .ThenInclude(o => o.Cliente)
+                                 .ToList();
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
-
+                throw new Exception("Error al obtener los detalles de la orden por número de orden: " + ex.Message);
             }
         }
 
-        public DetallesOrden obtenerPorCorreo(String nombre)
+        public DetallesOrden BuscarPorId(int numeroOrden)
         {
             try
             {
-                return _dbContext.DetallesOrdens.FirstOrDefault(d => d.Orden.Cliente.NombreUsuario == nombre);
-
+                return _dbContext.DetallesOrdens
+                                 .Include(d => d.Orden) // Incluir la propiedad de navegación Orden
+                                 .FirstOrDefault(d => d.Orden.OrdenId == numeroOrden);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
-
+                throw new Exception("Error al obtener los detalles de la orden por número de orden: " + ex.Message);
             }
         }
+
+
+        public List<DetallesOrden> obtenerPorFecha(DateOnly fecha)
+        {
+            try
+            {
+                return _dbContext.DetallesOrdens
+                                 .Where(d => d.Orden.OrdenFecha == fecha)
+                                 .Include(d => d.Producto)
+                                 .Include(d => d.Orden)
+                                     .ThenInclude(o => o.Cliente)
+                                 .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los detalles de la orden por fecha: " + ex.Message);
+            }
+        }
+
+        public List<DetallesOrden> obtenerPorCorreo(string correoUsuario)
+        {
+            try
+            {
+                return _dbContext.DetallesOrdens
+                                 .Where(d => d.Orden.Cliente.NombreUsuario == correoUsuario)
+                                 .Include(d => d.Producto)
+                                 .Include(d => d.Orden)
+                                     .ThenInclude(o => o.Cliente)
+                                 .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los detalles de la orden por correo de usuario: " + ex.Message);
+            }
+        }
+
 
         public DetallesOrden obtenerPorProducto(String producto)
         {
@@ -87,6 +114,9 @@ namespace DA
             try
             {
                 return _dbContext.Set<DetallesOrden>()
+                                 .Include(d => d.Producto) // Incluir Producto
+                                 .Include(d => d.Orden)    // Incluir Orden
+                                    .ThenInclude(o => o.Cliente) // Incluir Cliente de la Orden
                                  .OrderBy(o => o.Orden.OrdenFecha)
                                  .ToList();
             }
@@ -95,6 +125,7 @@ namespace DA
                 throw new Exception(ex.Message);
             }
         }
+
     }
 }
 

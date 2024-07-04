@@ -32,8 +32,8 @@ namespace DA
         {
             try
             {
-                Categoria ca =  _dbContext.Categoria.FirstOrDefault(c => c.CategoriaId == 3);
-                return ca;
+                return _dbContext.Categoria.FirstOrDefault(c => c.CategoriaId == id);
+                
             }
             catch (Exception ex)
             {

@@ -25,10 +25,7 @@ public class CarritoController : Controller
         var session = _httpContextAccessor.HttpContext.Session;
         var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
 
-        if (carrito.Count == 0)
-        {
-            TempData["CarritoVacio"] = "Tu carrito de compras está vacío.";
-        }
+        
 
         var productosCarrito = new List<(Producto producto, int cantidad)>();
 

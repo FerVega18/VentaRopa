@@ -53,17 +53,11 @@ namespace DA
                 {
                     if (popularidad.ContainsKey(detalle.ProductoId))
                     {
-                        if (detalle.Cantidad.HasValue)
-                        {
-                            popularidad[detalle.ProductoId] += detalle.Cantidad.Value;
-                        }
+                        popularidad[detalle.ProductoId] += detalle.Cantidad??0;
                     }
                     else
                     {
-                        if (detalle.Cantidad.HasValue)
-                        {
-                            popularidad[detalle.ProductoId] = detalle.Cantidad.Value;
-                        }
+                        popularidad[detalle.ProductoId] = detalle.Cantidad??0;
                     }
                 }
 
@@ -74,6 +68,7 @@ namespace DA
                 throw new Exception("Ocurrió un error al obtener la popularidad de productos: " + ex.Message);
             }
         }
+
 
         public Producto ObtenerPorId(int id)
         {
