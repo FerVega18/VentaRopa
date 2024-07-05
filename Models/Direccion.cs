@@ -7,9 +7,9 @@ public partial class Direccion
 {
     public int DireccionId { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string Descripcion { get; set; }
 
     public int ClienteId { get; set; }
 
-    public virtual Cliente Cliente { get; set; } = null!;
+    public virtual Cliente Cliente { get; set; }
 }

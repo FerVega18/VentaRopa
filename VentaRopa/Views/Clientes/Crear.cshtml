@@ -6,40 +6,40 @@
 
 <h2>Crear Cliente</h2>
 
-<form asp-action="Crear" method="post">
+<form asp-action="Crear" method="post" id="crearClienteForm">
     <div class="form-group">
         <label asp-for="ClienteId" class="control-label">Cédula</label>
-        <input asp-for="ClienteId" class="form-control" />
+        <input asp-for="ClienteId" class="form-control" pattern="\d{9}" title="Debe tener 9 dígitos" maxlength="9" required />
         <span asp-validation-for="ClienteId" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Nombre" class="control-label"></label>
-        <input asp-for="Nombre" class="form-control" />
+        <label asp-for="Nombre" class="control-label">Nombre</label>
+        <input asp-for="Nombre" class="form-control" required />
         <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Apellido" class="control-label"></label>
-        <input asp-for="Apellido" class="form-control" />
+        <label asp-for="Apellido" class="control-label">Apellido</label>
+        <input asp-for="Apellido" class="form-control" required />
         <span asp-validation-for="Apellido" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Nacimiento" class="control-label"></label>
-        <input asp-for="Nacimiento" type="date" class="form-control" />
+        <label asp-for="Nacimiento" class="control-label">Fecha de Nacimiento</label>
+        <input asp-for="Nacimiento" type="date" class="form-control" id="nacimiento" required />
         <span asp-validation-for="Nacimiento" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Pais" class="control-label"></label>
-        <input asp-for="Pais" class="form-control" />
+        <label asp-for="Pais" class="control-label">País</label>
+        <input asp-for="Pais" class="form-control" required />
         <span asp-validation-for="Pais" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="NombreUsuario" class="control-label"></label>
-        <input asp-for="NombreUsuario" class="form-control" />
+        <label asp-for="NombreUsuario" class="control-label">Nombre de Usuario</label>
+        <input asp-for="NombreUsuario" class="form-control" required />
         <span asp-validation-for="NombreUsuario" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label for="Contraseña" class="control-label">Contraseña del Usuario</label>
-        <input id="Contraseña" name="Contraseña" type="password" class="form-control" />
+        <input id="Contraseña" name="Contraseña" type="password" class="form-control" required />
         <span class="text-danger">Ingrese la contraseña del usuario asociado.</span>
     </div>
 
@@ -48,7 +48,7 @@
     <div id="direcciones">
         <div class="form-group">
             <label for="direcciones[0]" class="control-label">Descripción de Dirección</label>
-            <input id="direcciones[0]" name="direcciones[0]" type="text" class="form-control" placeholder="Ingrese la dirección de entrega" />
+            <input id="direcciones[0]" name="direcciones[0]" type="text" class="form-control" required />
         </div>
     </div>
     <button type="button" id="agregarDireccion" class="btn btn-primary">Añadir otra dirección</button>
@@ -58,15 +58,15 @@
     <div id="tarjetas">
         <div class="form-group">
             <label for="tarjetas[0]" class="control-label">Número de Tarjeta</label>
-            <input id="tarjetas[0]" name="tarjetas[0]" type="text" class="form-control" />
+            <input id="tarjetas[0]" name="tarjetas[0]" type="text" class="form-control" pattern="\d{16}" title="Debe tener 16 dígitos" required />
         </div>
         <div class="form-group">
             <label for="cvcTarjetas[0]" class="control-label">CVC de Tarjeta</label>
-            <input id="cvcTarjetas[0]" name="cvcTarjetas[0]" type="text" class="form-control" />
+            <input id="cvcTarjetas[0]" name="cvcTarjetas[0]" type="text" class="form-control" pattern="\d{3}" title="Debe tener 3 dígitos" maxlength="3" required />
         </div>
         <div class="form-group">
             <label for="fechaVencimientoTarjetas[0]" class="control-label">Fecha de Vencimiento</label>
-            <input id="fechaVencimientoTarjetas[0]" name="fechaVencimientoTarjetas[0]" type="date" class="form-control" />
+            <input id="fechaVencimientoTarjetas[0]" name="fechaVencimientoTarjetas[0]" type="date" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
         </div>
     </div>
     <button type="button" id="agregarTarjeta" class="btn btn-primary">Añadir otra tarjeta</button>
@@ -75,7 +75,12 @@
         <input type="submit" value="Crear" class="btn btn-primary" />
     </div>
 </form>
-
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Error:</strong> @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    </div>
+}
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -88,7 +93,7 @@
             var nuevaDireccion = `
                                 <div class="form-group">
                                     <label for="direcciones[${contadorDireccion}]" class="control-label">Descripción de Dirección</label>
-                                    <input id="direcciones[${contadorDireccion}]" name="direcciones[${contadorDireccion}]" type="text" class="form-control" />
+                                    <input id="direcciones[${contadorDireccion}]" name="direcciones[${contadorDireccion}]" type="text" class="form-control" required />
                                 </div>
                             `;
             $('#direcciones').append(nuevaDireccion);
@@ -99,20 +104,74 @@
             var nuevaTarjeta = `
                                 <div class="form-group">
                                     <label for="tarjetas[${contadorTarjeta}]" class="control-label">Número de Tarjeta</label>
-                                    <input id="tarjetas[${contadorTarjeta}]" name="tarjetas[${contadorTarjeta}]" type="text" class="form-control" />
+                                    <input id="tarjetas[${contadorTarjeta}]" name="tarjetas[${contadorTarjeta}]" type="text" class="form-control" pattern="\\d{16}" title="Debe tener 16 dígitos" required />
                                 </div>
                                 <div class="form-group">
                                     <label for="cvcTarjetas[${contadorTarjeta}]" class="control-label">CVC de Tarjeta</label>
-                                    <input id="cvcTarjetas[${contadorTarjeta}]" name="cvcTarjetas[${contadorTarjeta}]" type="text" class="form-control" />
+                                    <input id="cvcTarjetas[${contadorTarjeta}]" name="cvcTarjetas[${contadorTarjeta}]" type="text" class="form-control" pattern="\\d{3}" title="Debe tener 3 dígitos" maxlength="3" required />
                                 </div>
                                 <div class="form-group">
                                     <label for="fechaVencimientoTarjetas[${contadorTarjeta}]" class="control-label">Fecha de Vencimiento</label>
-                                    <input id="fechaVencimientoTarjetas[${contadorTarjeta}]" name="fechaVencimientoTarjetas[${contadorTarjeta}]" type="date" class="form-control" />
+                                    <input id="fechaVencimientoTarjetas[${contadorTarjeta}]" name="fechaVencimientoTarjetas[${contadorTarjeta}]" type="date" class="form-control" min="${new Date().toISOString().split('T')[0]}" required />
                                 </div>
                             `;
             $('#tarjetas').append(nuevaTarjeta);
             contadorTarjeta++;
         });
+
+        $('#crearClienteForm').submit(function (event) {
+            // Validar que todos los campos estén llenos
+            var isValid = true;
+            $('input[type="text"], input[type="date"], input[type="password"]').each(function () {
+                if ($(this).val() === '') {
+                    isValid = false;
+                    $(this).addClass('is-invalid');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            // Validar campos únicos (direcciones y tarjetas)
+            var direcciones = [];
+            $('input[name^="direcciones"]').each(function () {
+                if (direcciones.includes($(this).val())) {
+                    isValid = false;
+                    $(this).addClass('is-invalid');
+                } else {
+                    direcciones.push($(this).val());
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            var tarjetas = [];
+            $('input[name^="tarjetas"]').each(function () {
+                if (tarjetas.includes($(this).val())) {
+                    isValid = false;
+                    $(this).addClass('is-invalid');
+                } else {
+                    tarjetas.push($(this).val());
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            // Validar que la fecha de nacimiento sea de al menos 18 años
+            var fechaNacimiento = $('#nacimiento').val();
+            var fechaMinima = new Date();
+            fechaMinima.setFullYear(fechaMinima.getFullYear() - 18);
+
+            if (new Date(fechaNacimiento) > fechaMinima) {
+                isValid = false;
+                $('#nacimiento').addClass('is-invalid');
+                alert('La fecha de nacimiento debe ser de al menos 18 años.');
+            } else {
+                $('#nacimiento').removeClass('is-invalid');
+            }
+
+            // Detener el envío del formulario si no es válido
+            if (!isValid) {
+                event.preventDefault();
+                alert('Por favor, complete todos los campos y asegúrese de que no haya duplicados.');
+            }
+        });
     </script>
 }
-

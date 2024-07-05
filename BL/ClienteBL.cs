@@ -37,7 +37,7 @@ namespace BL
                     }
                    
                     // Asignar el usuario al cliente
-                    cliente.NombreUsuarioNavigation = usuario;
+                    cliente.NombreUsuarioNavigation = usuario;// Considerar quitar
 
                     // Crear el cliente
                     return clienteDA.Agregar(cliente);
