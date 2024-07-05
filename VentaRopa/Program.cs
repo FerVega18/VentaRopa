@@ -75,6 +75,7 @@ app.UseAuthorization();
 
 // Añadir middleware de sesión
 app.UseSession();
+
 app.MapControllerRoute(
     name: "admin",
     pattern: "admin",
@@ -84,9 +85,9 @@ app.MapControllerRoute(
     name: "ventas",
     pattern: "ventas",
     defaults: new { controller = "Usuarios", action = "Login2" });
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Productos}/{action=Lista}/{id?}");
 
 app.Run();
-

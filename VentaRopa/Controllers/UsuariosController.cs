@@ -104,16 +104,57 @@ namespace VentaRopa.Controllers
             return View();
         }
 
-        // GET: Usuarios/Logout
-        public async Task<IActionResult> Logout()
+        [HttpGet("/admin")]
+        [HttpGet("/ventas")]
+        public IActionResult Login2(string returnUrl)
         {
-            // Cerrar sesión con cookies
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Lista", "Productos");
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
         }
 
+        [HttpPost("/admin")]
+        [HttpPost("/ventas")]
+        public async Task<IActionResult> Login2(string nombreUsuario, string contraseña, string returnUrl)
+        {
+            // Validación manual
+            var validationErrors = new Dictionary<string, string>();
 
+            if (string.IsNullOrWhiteSpace(nombreUsuario))
+            {
+                validationErrors.Add("nombreUsuario", "El nombre de usuario es requerido.");
+            }
 
+            if (string.IsNullOrWhiteSpace(contraseña))
+            {
+                validationErrors.Add("contraseña", "La contraseña es requerida.");
+            }
+
+            if (validationErrors.Any())
+            {
+                ViewBag.ValidationErrors = validationErrors;
+                ViewBag.ReturnUrl = returnUrl;
+                return View();
+            }
+
+            var usuario = _usuarioBL.ObtenerUsuario(nombreUsuario, contraseña);
+            if (usuario != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, usuario.NombreUsuario),
+                    new Claim(ClaimTypes.Role, usuario.Rol.Descripcion)
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+                return Redirect(returnUrl ?? "/");
+            }
+
+            ViewBag.Error = "Usuario o contraseña incorrectos.";
+            ViewBag.ReturnUrl = returnUrl;
+            return View();
+        }
     }
 }
 
