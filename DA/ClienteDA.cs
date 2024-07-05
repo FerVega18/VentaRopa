@@ -80,7 +80,7 @@ namespace DA
                     .Include(c => c.Direccions) // Incluir la colección de direcciones
                     .Include(c => c.Tarjeta) // Incluir la colección de tarjetas
                     .AsEnumerable()
-                    .FirstOrDefault(c => c.NombreUsuario != null && c.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase));
+                    .FirstOrDefault(c =>  c.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase));
 
                 if (cliente == null)
                 {

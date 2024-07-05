@@ -120,5 +120,13 @@ namespace DA
             
         }
 
+        public EstadoOrden obtenerEstado(int id) {
+            try {
+                return _dbContext.EstadoOrdens.FirstOrDefault(e => e.EstadoId == id);
+            } catch (Exception ex) {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }
