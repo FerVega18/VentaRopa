@@ -56,7 +56,8 @@ namespace VentaRopa.Controllers
         {
             return View();
         }
-        
+
+        // POST: Usuarios/Login
         // POST: Usuarios/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -65,37 +66,30 @@ namespace VentaRopa.Controllers
             if (ModelState.IsValid)
             {
                 var usuario = _usuarioBL.ObtenerUsuario(nombreUsuario, contraseña);
-                
+
                 if (usuario != null)
                 {
-                    // Crear las claims del usuario
-                    var claims = new List<Claim>
+                    if (usuario.RolId != 1) // Verifica si el usuario tiene el rol de Cliente
                     {
-                        new Claim(ClaimTypes.Name, usuario.NombreUsuario),
-                        new Claim(ClaimTypes.Role, usuario.Rol.ToString()) 
-                    };
+                        ModelState.AddModelError(string.Empty, "Solo los clientes pueden iniciar sesión aquí.");
+                        return View();
+                    }
 
-                    // Crear la identidad del usuario
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, usuario.NombreUsuario),
+                new Claim(ClaimTypes.Role, usuario.Rol.Descripcion) // Asegúrate de que el rol sea "Cliente"
+            };
+
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                    // Crear las propiedades de autenticación
                     var authProperties = new AuthenticationProperties
                     {
                         IsPersistent = true,
                         ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
                     };
 
-                    // Iniciar sesión con cookies
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-
-                    // Mover productos del carrito no autenticado al autenticado, si existen
-                    var session = _httpContextAccessor.HttpContext.Session;
-                    var carrito = session.GetObjectFromJson<List<int>>("Carrito") ?? new List<int>();
-                    if (carrito.Count > 0)
-                    {
-                        // Asocia el carrito con el usuario autenticado (ejemplo conceptual)
-                        // Guardar carrito en la base de datos o asociarlo con el usuario
-                    }
 
                     return RedirectToAction("Lista", "Productos");
                 }
@@ -103,6 +97,9 @@ namespace VentaRopa.Controllers
             }
             return View();
         }
+
+
+
 
         [HttpGet("/admin")]
         [HttpGet("/ventas")]

@@ -176,10 +176,13 @@ public class OrdenController : Controller
             }
         }
 
+        // Vaciar el carrito después de la compra
+        var session = _httpContextAccessor.HttpContext.Session;
+        session.Remove("Carrito");
+
         ViewBag.CompraProcesada = true;
         return View("Compra");
     }
-
 
 
 
@@ -251,15 +254,44 @@ public class OrdenController : Controller
 
         return RedirectToAction("Index");
     }
+    [Authorize(Roles = "Administrador")]
+    public IActionResult ReporteVentas()
+    {
+        return View();
+    }
 
+    [Authorize(Roles = "Administrador")]
+    [HttpPost]
+    public IActionResult GenerarReporte(DateOnly fechaInicio, DateOnly fechaFin)
+    {
+        try
+        {
+            var ventasEnRango = _detallesOrdenBL.obtenerPorRangoFechas(fechaInicio, fechaFin);
+
+            // Obtener la fecha con más órdenes
+            var fechaMasOrdenes = ventasEnRango
+                .GroupBy(vo => vo.Orden.OrdenFecha)
+                .OrderByDescending(grp => grp.Count())
+                .Select(grp => grp.Key)
+                .FirstOrDefault();
+
+            // Obtener la fecha con más ingresos monetarios
+            var fechaMasIngresos = ventasEnRango
+                .GroupBy(vo => vo.Orden.OrdenFecha)
+                .OrderByDescending(grp => grp.Sum(vo => vo.Cantidad * vo.Precio))
+                .Select(grp => grp.Key)
+                .FirstOrDefault();
+
+            var model = new Tuple<IEnumerable<DetallesOrden>, DateOnly?, DateOnly?>(ventasEnRango, fechaMasOrdenes, fechaMasIngresos);
+
+            return View("ReporteVentas", model);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Error al generar el reporte: {ex.Message}");
+            return View("ReporteVentas");
+        }
+    }
 
 
 }
-
-
-
-
-
-
-
-

@@ -1,0 +1,55 @@
+﻿@model Tuple<IEnumerable<Models.DetallesOrden>, DateOnly?, DateOnly?>
+
+<h1>Reporte de Ventas</h1>
+
+<form asp-action="GenerarReporte" method="post">
+    <div class="form-group">
+        <label for="fechaInicio">Fecha de Inicio:</label>
+        <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="fechaFin">Fecha de Fin:</label>
+        <input type="date" id="fechaFin" name="fechaFin" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Generar Reporte</button>
+</form>
+
+@if (Model != null && Model.Item1.Any())
+{
+    <h2>Ventas en el Rango de Fechas Seleccionado</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número de Orden</th>
+                <th>Fecha de Orden</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in Model.Item1)
+            {
+                <tr>
+                    <td>@detalle.Orden.OrdenId</td>
+                    <td>@detalle.Orden.OrdenFecha.ToString()</td>
+                    <td>@detalle.Orden.NombreD</td>
+                    <td>@detalle.Cantidad</td>
+                    <td>@detalle.Precio</td>
+                    <td>@(detalle.Cantidad * detalle.Precio)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3>Fecha con más órdenes:</h3>
+    <p>@(Model.Item2.HasValue ? Model.Item2.Value.ToShortDateString() : "No hay datos")</p>
+
+    <h3>Fecha con más ingresos monetarios:</h3>
+    <p>@(Model.Item3.HasValue ? Model.Item3.Value.ToShortDateString() : "No hay datos")</p>
+}
+else
+{
+    <p>No se encontraron ventas en el rango de fechas seleccionado.</p>
+}
