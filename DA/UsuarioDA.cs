@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Models;
 
 public class UsuarioDA
 {
@@ -36,20 +37,22 @@ public class UsuarioDA
         }
     }
 
-    public  Usuario ObtenerUsuario(string nombreUsuario, string contrasena)
+    public Usuario ObtenerUsuario(string nombreUsuario, string contrasena)
     {
         try
         {
             Usuario usuario = _dbContext.Usuarios
+                .Include(u => u.Rol) 
                 .AsEnumerable()
                 .FirstOrDefault(u => u.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase) && u.Contraseña == contrasena);
             return usuario;
         }
         catch (Exception ex)
         {
-            throw new Exception(ex.Message);
+            throw new Exception("Error al obtener el usuario: " + ex.Message);
         }
     }
+
 
     public Usuario obtenerUsuarioPorNombre(string nombreUsuario) {
         try {
@@ -71,5 +74,9 @@ public class UsuarioDA
             throw new Exception("Error al obtener todos los usuarios: " + ex.Message);
         }
     }
+
+   
+    
+
 }
 

@@ -61,14 +61,18 @@ namespace BL
             }
         }
 
-        public int AgregarDireccion(Direccion direccion, int cliente)
+        public int AgregarDireccion(Direccion direccion, int cliente, bool clienteNuevo)
         {
             try
             {
-               direccion.ClienteId =  clienteDA.ObtenerPorId(cliente).ClienteId;
-                return direccionesDA.AgregarDireccion(direccion);
-            }
-            catch (Exception ex)
+                if (clienteNuevo) {
+                    return direccionesDA.AgregarDireccion(direccion);
+                }
+            
+               direccion.ClienteId = clienteDA.ObtenerPorId(cliente).ClienteId;
+            return direccionesDA.AgregarDireccion(direccion);
+
+        }catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }

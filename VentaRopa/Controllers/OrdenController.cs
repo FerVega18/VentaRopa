@@ -103,7 +103,7 @@ public class OrdenController : Controller
                     ClienteId = cedula,
                     Descripcion = direccion,
                 };
-                _direccionesBL.AgregarDireccion(direccionCliente, cedula);
+                _direccionesBL.AgregarDireccion(direccionCliente, cedula, true);
 
                 orden = new Orden
                 {

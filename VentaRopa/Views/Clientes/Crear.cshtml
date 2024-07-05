@@ -47,8 +47,8 @@
     <h3>Direcciones</h3>
     <div id="direcciones">
         <div class="form-group">
-            <label for="direcciones[0].Descripcion" class="control-label">Descripción de Dirección</label>
-            <input id="direcciones[0].Descripcion" name="direcciones[0].Descripcion" type="text" class="form-control" placeholder="Ingrese la dirección de entrega"/>
+            <label for="direcciones[0]" class="control-label">Descripción de Dirección</label>
+            <input id="direcciones[0]" name="direcciones[0]" type="text" class="form-control" placeholder="Ingrese la dirección de entrega" />
         </div>
     </div>
     <button type="button" id="agregarDireccion" class="btn btn-primary">Añadir otra dirección</button>
@@ -57,16 +57,16 @@
     <h3>Tarjetas</h3>
     <div id="tarjetas">
         <div class="form-group">
-            <label for="tarjetas[0].Numero" class="control-label">Número de Tarjeta</label>
-            <input id="tarjetas[0].Numero" name="tarjetas[0].Numero" type="text" class="form-control" />
+            <label for="tarjetas[0]" class="control-label">Número de Tarjeta</label>
+            <input id="tarjetas[0]" name="tarjetas[0]" type="text" class="form-control" />
         </div>
         <div class="form-group">
-            <label for="tarjetas[0].Cvc" class="control-label">CVC de Tarjeta</label>
-            <input id="tarjetas[0].Cvc" name="tarjetas[0].Cvc" type="text" class="form-control" />
+            <label for="cvcTarjetas[0]" class="control-label">CVC de Tarjeta</label>
+            <input id="cvcTarjetas[0]" name="cvcTarjetas[0]" type="text" class="form-control" />
         </div>
         <div class="form-group">
-            <label for="tarjetas[0].FechaVencimiento" class="control-label">Fecha de Vencimiento</label>
-            <input id="tarjetas[0].FechaVencimiento" name="tarjetas[0].FechaVencimiento" type="date" class="form-control" />
+            <label for="fechaVencimientoTarjetas[0]" class="control-label">Fecha de Vencimiento</label>
+            <input id="fechaVencimientoTarjetas[0]" name="fechaVencimientoTarjetas[0]" type="date" class="form-control" />
         </div>
     </div>
     <button type="button" id="agregarTarjeta" class="btn btn-primary">Añadir otra tarjeta</button>
@@ -86,32 +86,33 @@
 
         $('#agregarDireccion').click(function () {
             var nuevaDireccion = `
-                    <div class="form-group">
-                        <label for="direcciones[${contadorDireccion}].Descripcion" class="control-label">Descripción de Dirección</label>
-                        <input id="direcciones[${contadorDireccion}].Descripcion" name="direcciones[${contadorDireccion}].Descripcion" type="text" class="form-control" />
-                    </div>
-                    `;
+                                <div class="form-group">
+                                    <label for="direcciones[${contadorDireccion}]" class="control-label">Descripción de Dirección</label>
+                                    <input id="direcciones[${contadorDireccion}]" name="direcciones[${contadorDireccion}]" type="text" class="form-control" />
+                                </div>
+                            `;
             $('#direcciones').append(nuevaDireccion);
             contadorDireccion++;
         });
 
         $('#agregarTarjeta').click(function () {
             var nuevaTarjeta = `
-                    <div class="form-group">
-                        <label for="tarjetas[${contadorTarjeta}].Numero" class="control-label">Número de Tarjeta</label>
-                        <input id="tarjetas[${contadorTarjeta}].Numero" name="tarjetas[${contadorTarjeta}].Numero" type="text" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="tarjetas[${contadorTarjeta}].Cvc" class="control-label">CVC de Tarjeta</label>
-                        <input id="tarjetas[${contadorTarjeta}].Cvc" name="tarjetas[${contadorTarjeta}].Cvc" type="text" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="tarjetas[${contadorTarjeta}].FechaVencimiento" class="control-label">Fecha de Vencimiento</label>
-                        <input id="tarjetas[${contadorTarjeta}].FechaVencimiento" name="tarjetas[${contadorTarjeta}].FechaVencimiento" type="date" class="form-control" />
-                    </div>
-                    `;
+                                <div class="form-group">
+                                    <label for="tarjetas[${contadorTarjeta}]" class="control-label">Número de Tarjeta</label>
+                                    <input id="tarjetas[${contadorTarjeta}]" name="tarjetas[${contadorTarjeta}]" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvcTarjetas[${contadorTarjeta}]" class="control-label">CVC de Tarjeta</label>
+                                    <input id="cvcTarjetas[${contadorTarjeta}]" name="cvcTarjetas[${contadorTarjeta}]" type="text" class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="fechaVencimientoTarjetas[${contadorTarjeta}]" class="control-label">Fecha de Vencimiento</label>
+                                    <input id="fechaVencimientoTarjetas[${contadorTarjeta}]" name="fechaVencimientoTarjetas[${contadorTarjeta}]" type="date" class="form-control" />
+                                </div>
+                            `;
             $('#tarjetas').append(nuevaTarjeta);
             contadorTarjeta++;
         });
     </script>
 }
+

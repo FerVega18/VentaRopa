@@ -10,13 +10,15 @@ namespace VentaRopa.Controllers
     {
         private readonly ClienteBL _clienteBL;
         private readonly UsuarioBL _usuarioBL;
-        private readonly TarjetasBL _tarjetasBL; // Agregamos la referencia a BL de Tarjetas
+        private readonly TarjetasBL _tarjetasBL; 
+        private DireccionesBL _direccionesBL;
 
-        public ClientesController(ClienteBL clienteBL, UsuarioBL usuarioBL, TarjetasBL tarjetasBL)
+        public ClientesController(ClienteBL clienteBL, UsuarioBL usuarioBL, TarjetasBL tarjetasBL,DireccionesBL direccionesBL)
         {
             _clienteBL = clienteBL;
             _usuarioBL = usuarioBL;
             _tarjetasBL = tarjetasBL;
+            _direccionesBL = direccionesBL;
         }
 
         // GET: Clientes/Crear
@@ -28,33 +30,55 @@ namespace VentaRopa.Controllers
         // POST: Clientes/Crear
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Crear(Cliente cliente, string contraseña)
+        public IActionResult Crear(int clienteId, string nombre, string apellido, DateOnly? nacimiento, string pais, string nombreUsuario, string contraseña, List<string> direcciones, List<string> tarjetas, List<string> cvcTarjetas, List<DateOnly> fechaVencimientoTarjetas)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     // Validar el usuario
-                    var usuario = _usuarioBL.ObtenerUsuario(cliente.NombreUsuario, contraseña);
-
+                    var usuario = _usuarioBL.ObtenerUsuario(nombreUsuario, contraseña);
                     if (usuario == null)
                     {
                         ModelState.AddModelError(string.Empty, "Usuario o contraseña incorrectos.");
-                        return View(cliente);
+                        return View();
                     }
 
-                    if (_clienteBL.ObtenerPorId(cliente.ClienteId) != null) {
-
-                        ModelState.AddModelError(string.Empty, "El cliente ya existe");
-                        return View(cliente);
+                    if (_clienteBL.ObtenerPorId(clienteId) != null)
+                    {
+                        ModelState.AddModelError(string.Empty, "El cliente ya existe.");
+                        return View();
                     }
 
-                    // Asignar el usuario al cliente
-                    cliente.NombreUsuarioNavigation = usuario;
+                    // Crear el objeto Cliente
+                    var cliente = new Cliente
+                    {
+                        ClienteId = clienteId,
+                        Nombre = nombre,
+                        Apellido = apellido,
+                        Nacimiento = nacimiento,
+                        Pais = pais,
+                        NombreUsuario = nombreUsuario,
+                        NombreUsuarioNavigation = usuario
+                    };
 
-                    // Crear el cliente
-                    _clienteBL.CrearCliente(cliente, contraseña,false);
+                    // Agregar direcciones
+                    foreach (var direccionDescripcion in direcciones)
+                    {
+                        var direccion = new Direccion { Descripcion = direccionDescripcion, ClienteId = clienteId };
+                        _direccionesBL.AgregarDireccion(direccion, clienteId, true);
+                    }
 
+                    // Agregar tarjetas
+                    for (int i = 0; i < tarjetas.Count; i++)
+                    {
+                        var tarjeta = new Tarjeta { Numero = tarjetas[i], Cvc = cvcTarjetas[i], FechaVencimiento = fechaVencimientoTarjetas[i], ClienteId = cliente.ClienteId };
+                        _tarjetasBL.Agregar(tarjeta);
+                    }
+
+                    
+
+                    _clienteBL.CrearCliente(cliente, contraseña, false);
                     return RedirectToAction("Lista", "Productos");
                 }
                 catch (Exception ex)
@@ -62,8 +86,9 @@ namespace VentaRopa.Controllers
                     ModelState.AddModelError(string.Empty, "Error al intentar crear el cliente: " + ex.Message);
                 }
             }
-            return View(cliente);
+            return View();
         }
+
 
     }
 }

@@ -1,0 +1,26 @@
+﻿Login.cshtml@{
+    ViewData["Title"] = "Login";
+}
+
+<h2>Login</h2>
+
+<form asp-action="Login2" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="nombreUsuario" class="control-label">Usuario</label>
+        <input asp-for="nombreUsuario" class="form-control" />
+        <span asp-validation-for="nombreUsuario" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="contraseña" class="control-label">Contraseña</label>
+        <input asp-for="contraseña" class="form-control" type="password" />
+        <span asp-validation-for="contraseña" class="text-danger"></span>
+    </div>
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+    <div>
+        <span class="text-danger">@ViewBag.Error</span>
+    </div>
+</form>

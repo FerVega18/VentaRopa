@@ -10,6 +10,7 @@ namespace BL
     public class UsuarioBL
     {
         private UsuarioDA usuarioDA;
+        
 
         public UsuarioBL(DbAa96f3VentaropaContext context)
         {
@@ -64,5 +65,9 @@ namespace BL
                 throw new Exception(ex.Message);
             }
         }
+
+        
+        
     }
 }
+

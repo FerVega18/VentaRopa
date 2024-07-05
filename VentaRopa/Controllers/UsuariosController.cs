@@ -1,6 +1,11 @@
 ﻿using BL;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Win32;
 using Models;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace VentaRopa.Controllers
@@ -8,7 +13,7 @@ namespace VentaRopa.Controllers
     public class UsuariosController : Controller
     {
         private readonly UsuarioBL _usuarioBL;
-        private IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UsuariosController(UsuarioBL usuarioBL, IHttpContextAccessor httpContextAccessor)
         {
@@ -32,7 +37,7 @@ namespace VentaRopa.Controllers
                 try
                 {
                     _usuarioBL.Agregar(usuario);
-                    return RedirectToAction("Crear","Clientes");
+                    return RedirectToAction("Crear", "Clientes");
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -46,19 +51,12 @@ namespace VentaRopa.Controllers
             return View(usuario);
         }
 
-        // GET: Usuario/Index
-        public async Task<IActionResult> Index() //Quitar esto
-        {
-            var usuarios = await _usuarioBL.ObtenerTodos();
-            return View(usuarios);
-        }
-
         // GET: Usuarios/Login
         public IActionResult Login()
         {
             return View();
         }
-
+        
         // POST: Usuarios/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -67,9 +65,28 @@ namespace VentaRopa.Controllers
             if (ModelState.IsValid)
             {
                 var usuario = _usuarioBL.ObtenerUsuario(nombreUsuario, contraseña);
+                
                 if (usuario != null)
                 {
-                    HttpContext.Session.SetString("Usuario", usuario.NombreUsuario); // Guarda el nombre del usuario en la sesión
+                    // Crear las claims del usuario
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, usuario.NombreUsuario),
+                        new Claim(ClaimTypes.Role, usuario.Rol.ToString()) 
+                    };
+
+                    // Crear la identidad del usuario
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    // Crear las propiedades de autenticación
+                    var authProperties = new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                    };
+
+                    // Iniciar sesión con cookies
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
                     // Mover productos del carrito no autenticado al autenticado, si existen
                     var session = _httpContextAccessor.HttpContext.Session;
@@ -88,10 +105,15 @@ namespace VentaRopa.Controllers
         }
 
         // GET: Usuarios/Logout
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear(); // Limpia la sesión
+            // Cerrar sesión con cookies
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Lista", "Productos");
         }
+
+
+
     }
 }
+

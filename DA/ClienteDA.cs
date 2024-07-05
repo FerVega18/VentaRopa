@@ -74,14 +74,26 @@ namespace DA
         {
             try
             {
-                return _dbContext.Clientes.AsEnumerable().FirstOrDefault(u => u.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase));
+                Cliente cliente = _dbContext.Clientes
+                    .Include(c => c.NombreUsuarioNavigation) // Incluir la navegación a Usuario
+                    .Include(c => c.Direccions) // Incluir la colección de direcciones
+                    .Include(c => c.Tarjeta) // Incluir la colección de tarjetas
+                    .AsEnumerable()
+                    .FirstOrDefault(c => c.NombreUsuario != null && c.NombreUsuario.Equals(nombreUsuario, StringComparison.OrdinalIgnoreCase));
 
+                if (cliente == null)
+                {
+                    throw new Exception($"Cliente con nombre de usuario '{nombreUsuario}' no encontrado.");
+                }
+
+                return cliente;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error al obtener el cliente por nombre de usuario: " + ex.Message);
             }
         }
+
 
 
 
