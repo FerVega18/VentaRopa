@@ -49,15 +49,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
-// Configurar políticas de autorización
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrador"));
     options.AddPolicy("RequireSalesRole", policy => policy.RequireRole("Ventas"));
-    options.AddPolicy("RequireClientRole", policy => policy.RequireAssertion(context =>
-    {
-        return context.User.IsInRole("Cliente") || !context.User.Identity.IsAuthenticated;
-    }));
+    options.AddPolicy("RequireClientRole", policy => policy.RequireRole("Cliente"));
+});
+
+// Configurar la expiración de la sesión
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(2);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 

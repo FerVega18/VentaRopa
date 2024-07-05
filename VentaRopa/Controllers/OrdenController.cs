@@ -146,10 +146,13 @@ public class OrdenController : Controller
             }
         }
 
+        // Vaciar el carrito después de la compra
+        var session = _httpContextAccessor.HttpContext.Session;
+        session.Remove("Carrito");
+
         ViewBag.CompraProcesada = true;
         return View("Compra");
     }
-
 
 
 
@@ -223,11 +226,3 @@ public class OrdenController : Controller
     }
 
 }
-
-
-
-
-
-
-
-
