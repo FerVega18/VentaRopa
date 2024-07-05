@@ -53,6 +53,35 @@ public class OrdenController : Controller
         return View(productosList);
     }
 
+    public IActionResult ListadoCliente()
+    {
+
+        var usuarioAutenticado = User.Identity.IsAuthenticated;
+        List<DetallesOrden> ordenes = null;
+
+        if (usuarioAutenticado)
+        {
+            string usuario = User.Identity.Name;
+            ordenes = _detallesOrdenBL.obtenerPorCorreo(usuario);
+        }
+        ViewBag.UsuarioAutenticado = usuarioAutenticado;
+    
+
+        return View(ordenes);
+    }
+
+    public IActionResult BuscarOrden(int numeroOrden) {
+      List<DetallesOrden> ordenes = new List<DetallesOrden>();
+      DetallesOrden orden = _detallesOrdenBL.BuscarPorId(numeroOrden);
+        if (orden == null) {
+            TempData["OrdenNoEncontrada"] = "La orden no existe";
+            return View("ListadoCliente");
+        }
+        ordenes.Add(orden);
+        return View("ListadoCliente",ordenes);
+    }
+
+
     [HttpPost]
     public IActionResult ProcesarCompra(string nombre, string apellido, string direccion, string numeroTarjeta, string cvc, DateOnly fechaVencimiento, int cedula, int? tarjetaId, List<CarritoProducto> productos)
     {
@@ -113,6 +142,7 @@ public class OrdenController : Controller
                     OrdenFecha = DateOnly.FromDateTime(DateTime.Now),
                     NombreD = nombre,
                     DireccionD = direccion,
+                    Estado = _ordenesBL.obtenerEstado(3),
                     EstadoId = 3,
                 };
 
@@ -221,6 +251,8 @@ public class OrdenController : Controller
 
         return RedirectToAction("Index");
     }
+
+
 
 }
 

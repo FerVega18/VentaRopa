@@ -128,5 +128,17 @@ namespace BL
             
         }
 
+        public EstadoOrden obtenerEstado(int id)
+        {
+            try
+            {
+                return ordenesDA.obtenerEstado(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }
