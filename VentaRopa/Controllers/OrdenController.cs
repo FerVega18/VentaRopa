@@ -7,7 +7,7 @@ using Models;
 using Newtonsoft.Json;
 using System.Linq;
 
-//--Ya tiene todas las validaciones--
+
 public class OrdenController : Controller
 {
     private readonly OrdenesBL _ordenesBL;
@@ -55,6 +55,12 @@ public class OrdenController : Controller
     [HttpPost]
     public IActionResult ProcesarCompra(string nombre, string apellido, string direccion, string numeroTarjeta, string cvc, DateOnly fechaVencimiento, int cedula, int? tarjetaId, List<CarritoProducto> productos)
     {
+        if (cedula.ToString().Length > 9)
+        {
+            ModelState.AddModelError("cedula", "La cédula no puede tener más de 9 dígitos.");
+            return View("Compra", productos);
+        }
+
         Orden orden = null;
 
         if (User.Identity.IsAuthenticated)
@@ -80,8 +86,7 @@ public class OrdenController : Controller
             if (clienteExistente != null)
             {
                 TempData["AlertaClienteRegistrado"] = "Parece que ya tienes una cuenta. ¡Inicia sesión!";
-                return View("Compra",productos);
-
+                return View("Compra", productos);
             }
             else
             {
@@ -99,9 +104,9 @@ public class OrdenController : Controller
                     Descripcion = direccion,
                 };
                 _direccionesBL.AgregarDireccion(direccionCliente, cedula);
+
                 orden = new Orden
                 {
-
                     ClienteId = cedula,
                     Cliente = cliente,
                     OrdenFecha = DateOnly.FromDateTime(DateTime.Now),
@@ -119,12 +124,9 @@ public class OrdenController : Controller
                 _tarjetasBL.Agregar(tarjetaCliente);
                 _ordenesBL.Agregar(orden);
             }
-            
-
         }
 
         // Guardar orden y detalles de la orden
-
         foreach (var item in productos)
         {
             Producto producto = _productosBL.obtenerPorId(item.productoId);
@@ -139,7 +141,6 @@ public class OrdenController : Controller
                     Cantidad = item.cantidad,
                     Precio = producto.Precio
                 };
-
                 _detallesOrdenBL.Agregar(detallesOrden);
             }
         }
@@ -151,47 +152,61 @@ public class OrdenController : Controller
 
 
 
+
     public async Task<IActionResult> Index()
     {
-        var detallesOrdenes = _detallesOrdenBL.listarOrdenados();
+        var ordenesSinDespachar = _detallesOrdenBL.listarOrdenados().Where(o => o.Orden.EstadoId == 3).ToList();
+        var ordenesDespachadas = _detallesOrdenBL.listarOrdenados().Where(o => o.Orden.EstadoId == 4).ToList();
 
-        return View(detallesOrdenes);
+        var model = new Tuple<IEnumerable<DetallesOrden>, IEnumerable<DetallesOrden>>(ordenesSinDespachar, ordenesDespachadas);
+        return View(model);
     }
 
     [HttpGet]
-    public IActionResult Buscar(string criterioBusqueda, int numeroOrden, string correoUsuario, DateOnly fecha, string nombreCliente, int? clienteId)
+    public IActionResult Buscar(string criterioBusqueda, int? numeroOrden, string correoUsuario, DateOnly? fechaInicio, DateOnly? fechaFin, string nombreCliente, int? clienteId)
     {
-        List<DetallesOrden> ordenes = new List<DetallesOrden>();
+        List<DetallesOrden> ordenesSinDespachar = new List<DetallesOrden>();
+        List<DetallesOrden> ordenesDespachadas = new List<DetallesOrden>();
 
-        if (criterioBusqueda == "numeroOrden" && numeroOrden!=null)
+        if (criterioBusqueda == "numeroOrden" && numeroOrden.HasValue)
         {
-             ordenes = _detallesOrdenBL.obtenerPorId(numeroOrden);
+            ordenesSinDespachar = _detallesOrdenBL.obtenerPorId(numeroOrden.Value).Where(o => o.Orden.EstadoId == 3).ToList();
+            ordenesDespachadas = _detallesOrdenBL.obtenerPorId(numeroOrden.Value).Where(o => o.Orden.EstadoId == 4).ToList();
         }
         else if (criterioBusqueda == "correoUsuario" && !string.IsNullOrEmpty(correoUsuario))
         {
-            ordenes = _detallesOrdenBL.obtenerPorCorreo(correoUsuario);
+            ordenesSinDespachar = _detallesOrdenBL.obtenerPorCorreo(correoUsuario).Where(o => o.Orden.EstadoId == 3).ToList();
+            ordenesDespachadas = _detallesOrdenBL.obtenerPorCorreo(correoUsuario).Where(o => o.Orden.EstadoId == 4).ToList();
         }
-        else if (criterioBusqueda == "fecha")
+        else if (criterioBusqueda == "fecha" && fechaInicio.HasValue && fechaFin.HasValue)
         {
-            ordenes = _detallesOrdenBL.obtenerPorFecha(fecha);
+            ordenesSinDespachar = _detallesOrdenBL.obtenerPorRangoFechas(fechaInicio.Value, fechaFin.Value).Where(o => o.Orden.EstadoId == 3).ToList();
+            ordenesDespachadas = _detallesOrdenBL.obtenerPorRangoFechas(fechaInicio.Value, fechaFin.Value).Where(o => o.Orden.EstadoId == 4).ToList();
         }
-   
+        else if (criterioBusqueda == "nombreCliente" && !string.IsNullOrEmpty(nombreCliente))
+        {
+            ordenesSinDespachar = _detallesOrdenBL.obtenerPorNombreCliente(nombreCliente).Where(o => o.Orden.EstadoId == 3).ToList();
+            ordenesDespachadas = _detallesOrdenBL.obtenerPorNombreCliente(nombreCliente).Where(o => o.Orden.EstadoId == 4).ToList();
+        }
+        else if (criterioBusqueda == "clienteId" && clienteId.HasValue)
+        {
+            ordenesSinDespachar = _detallesOrdenBL.obtenerPorClienteId(clienteId.Value).Where(o => o.Orden.EstadoId == 3).ToList();
+            ordenesDespachadas = _detallesOrdenBL.obtenerPorClienteId(clienteId.Value).Where(o => o.Orden.EstadoId == 4).ToList();
+        }
 
-        return View("Index", ordenes);
+        var model = new Tuple<IEnumerable<DetallesOrden>, IEnumerable<DetallesOrden>>(ordenesSinDespachar, ordenesDespachadas);
+        return View("Index", model);
     }
-
 
     [HttpPost]
     public IActionResult Despachar(int ordenId)
     {
-        DetallesOrden orden = _detallesOrdenBL.BuscarPorId(ordenId);
+        var orden = _ordenesBL.ObtenerPorId(ordenId);
 
         if (orden != null)
         {
-            
-            orden.Orden.EstadoId = 4; //Cambiar el estado a "Enviado"
-
-            
+            orden.EstadoId = 4; // Cambiar el estado a "Despachada"
+            _ordenesBL.Actualizar(orden);
 
             TempData["MensajeDespacho"] = $"Orden {ordenId} despachada correctamente.";
         }

@@ -63,19 +63,18 @@ namespace BL
             }
         }
 
-        public List<DetallesOrden> obtenerPorFecha(DateOnly fecha)
+        public List<DetallesOrden> obtenerPorRangoFechas(DateOnly fechaInicio, DateOnly fechaFin)
         {
             try
             {
-                return detallesOrdenesDA.obtenerPorFecha(fecha);
-
+                return detallesOrdenesDA.obtenerPorRangoFechas(fechaInicio, fechaFin);
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
-
             }
         }
+
 
         public List<DetallesOrden> obtenerPorCorreo(String nombre)
         {
@@ -116,5 +115,31 @@ namespace BL
                 throw new Exception(ex.Message);
             }
         }
+
+        public List<DetallesOrden> obtenerPorNombreCliente(string nombreCliente)
+        {
+            try
+            {
+                return detallesOrdenesDA.obtenerPorNombreCliente(nombreCliente);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los detalles de la orden por nombre de cliente: " + ex.Message);
+            }
+        }
+
+        public List<DetallesOrden> obtenerPorClienteId(int clienteId)
+        {
+            try
+            {
+                return detallesOrdenesDA.obtenerPorClienteId(clienteId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los detalles de la orden por ID de cliente: " + ex.Message);
+            }
+        }
+
+
     }
 }

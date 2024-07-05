@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Compra";
     var usuarioAutenticado = ViewBag.UsuarioAutenticado as bool?;
-    var cliente = ViewBag.Cliente as Models.Cliente;
+    var cliente = ViewBag.Cliente as Models.Cliente ?? new Models.Cliente();
     var compraProcesada = ViewBag.CompraProcesada as bool?;
 }
 
@@ -69,11 +69,12 @@ else
             {
                 <div class="col-md-6 mb-3">
                     <label for="cedula">Cédula</label>
-                    <input type="text" class="form-control" id="cedula" name="cedula" required>
+                    <input type="text" class="form-control" id="cedula" name="cedula" maxlength="9" required pattern="\d{1,9}" title="Ingrese una cédula válida de hasta 9 dígitos">
                     <div class="invalid-feedback">
-                        Por favor, ingrese su cédula.
+                        Por favor, ingrese su cédula (hasta 9 dígitos).
                     </div>
                 </div>
+
                 <div class="col-md-6 mb-3">
                     <label for="nombre">Nombre</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" required>
@@ -134,47 +135,3 @@ else
         <button class="btn btn-primary btn-lg btn-block" type="submit">Finalizar Compra</button>
     </form>
 }
-
-<script>
-    (function () {
-        'use strict';
-        window.addEventListener('load', function () {
-            var forms = document.getElementsByClassName('needs-validation');
-            Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (form.checkValidity() === false) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-
-                    // Validar fecha de vencimiento de la tarjeta
-                    var fechaVencimientoInput = document.getElementById('fechaVencimiento');
-                    var fechaVencimiento = new Date(fechaVencimientoInput.value + 'T00:00');
-                    var hoy = new Date();
-                    hoy.setHours(0, 0, 0, 0);
-
-                    if (fechaVencimiento < hoy) {
-                        document.getElementById('alertaTarjetaVencida').style.display = 'block';
-                        event.preventDefault();
-                        event.stopPropagation();
-                    } else {
-                        document.getElementById('alertaTarjetaVencida').style.display = 'none';
-                    }
-
-                    // Validar longitud del CVC
-                    var cvcInput = document.getElementById('cvc');
-                    if (cvcInput.value.length !== 3) {
-                        cvcInput.setCustomValidity("El CVC debe tener 3 dígitos.");
-                        cvcInput.reportValidity();
-                        event.preventDefault();
-                        event.stopPropagation();
-                    } else {
-                        cvcInput.setCustomValidity("");
-                    }
-
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        }, false);
-    })();
-</script>

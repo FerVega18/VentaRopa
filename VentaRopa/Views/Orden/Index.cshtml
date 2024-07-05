@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Models.DetallesOrden>
+﻿@model Tuple<IEnumerable<Models.DetallesOrden>, IEnumerable<Models.DetallesOrden>>
+
 
 @{
     ViewData["Title"] = "Órdenes de ventas";
@@ -6,6 +7,49 @@
 
 <h1>Órdenes de ventas</h1>
 
+<form asp-action="Buscar" method="get">
+    <div class="form-group">
+        <label for="criterioBusqueda">Buscar por</label>
+        <select class="form-control" id="criterioBusqueda" name="criterioBusqueda" onchange="mostrarCampoBusqueda()">
+            <option value="numeroOrden">Número de Orden</option>
+            <option value="correoUsuario">Correo de Usuario</option>
+            <option value="fecha">Fecha</option>
+            <option value="nombreCliente">Nombre del Cliente</option>
+            <option value="clienteId">ID del Cliente</option>
+        </select>
+    </div>
+
+    <div id="campoNumeroOrden" class="form-group campo-busqueda">
+        <label for="numeroOrden">Número de Orden</label>
+        <input type="number" class="form-control" id="numeroOrden" name="numeroOrden">
+    </div>
+
+    <div id="campoCorreoUsuario" class="form-group campo-busqueda" style="display: none;">
+        <label for="correoUsuario">Correo de Usuario</label>
+        <input type="email" class="form-control" id="correoUsuario" name="correoUsuario">
+    </div>
+
+    <div id="campoFecha" class="form-group campo-busqueda" style="display: none;">
+        <label for="fechaInicio">Fecha Inicio</label>
+        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+        <label for="fechaFin">Fecha Fin</label>
+        <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+    </div>
+
+    <div id="campoNombreCliente" class="form-group campo-busqueda" style="display: none;">
+        <label for="nombreCliente">Nombre del Cliente</label>
+        <input type="text" class="form-control" id="nombreCliente" name="nombreCliente">
+    </div>
+
+    <div id="campoClienteId" class="form-group campo-busqueda" style="display: none;">
+        <label for="clienteId">ID del Cliente</label>
+        <input type="number" class="form-control" id="clienteId" name="clienteId">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+
+<h2>Órdenes sin despachar</h2>
 <table class="table">
     <thead>
         <tr>
@@ -21,7 +65,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var detalle in Model)
+        @foreach (var detalle in Model.Item1)
         {
             <tr>
                 <td>@detalle.OrdenId</td>
@@ -33,19 +77,46 @@
                 <td>@detalle.Precio</td>
                 <td>@((detalle.Cantidad ?? 0) * (detalle.Precio ?? 0))</td>
                 <td>
-                    @if (detalle.Orden.EstadoId == 3) // Verifica si el estado es pendiente
-                    {
-                        <form asp-action="Despachar" method="post">
-                            <input type="hidden" name="ordenId" value="@detalle.OrdenId" />
-                            <button type="submit" class="btn btn-success">Despachar</button>
-                        </form>
-                    }
+                    <form asp-action="Despachar" method="post">
+                        <input type="hidden" name="ordenId" value="@detalle.OrdenId" />
+                        <button type="submit" class="btn btn-success">Despachar</button>
+                    </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
+<h2>Órdenes despachadas</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Número de orden</th>
+            <th>Fecha</th>
+            <th>Nombre del cliente</th>
+            <th>Correo de usuario</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var detalle in Model.Item2)
+        {
+            <tr>
+                <td>@detalle.OrdenId</td>
+                <td>@detalle.Orden?.OrdenFecha?.ToString("yyyy-MM-dd")</td>
+                <td>@(detalle.Orden?.Cliente != null ? $"{detalle.Orden.Cliente.Nombre} {detalle.Orden.Cliente.Apellido}" : "No asignado")</td>
+                <td>@(detalle.Orden?.Cliente != null ? detalle.Orden.Cliente.NombreUsuario : "No asignado")</td>
+                <td>@detalle.Producto?.Descripcion</td>
+                <td>@detalle.Cantidad</td>
+                <td>@detalle.Precio</td>
+                <td>@((detalle.Cantidad ?? 0) * (detalle.Precio ?? 0))</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @section Scripts {
     <script>
@@ -63,7 +134,11 @@
                 document.getElementById('campoCorreoUsuario').style.display = 'block';
             } else if (criterio === 'fecha') {
                 document.getElementById('campoFecha').style.display = 'block';
-            } 
+            } else if (criterio === 'nombreCliente') {
+                document.getElementById('campoNombreCliente').style.display = 'block';
+            } else if (criterio === 'clienteId') {
+                document.getElementById('campoClienteId').style.display = 'block';
+            }
         }
     </script>
 }

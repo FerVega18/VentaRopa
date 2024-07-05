@@ -102,5 +102,23 @@ namespace DA
             return _dbContext.Ordens.OrderBy(o => o.OrdenFecha).ToList();
         }
 
+        public void Actualizar(Orden orden)
+        {
+            _dbContext.Entry(orden).State = EntityState.Modified;
+            _dbContext.SaveChanges();
+        }
+
+        public Orden ObtenerPorId(int id)
+        {
+            try {
+                return _dbContext.Ordens.FirstOrDefault(o => o.OrdenId == id);
+
+            } catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+        }
+
     }
 }

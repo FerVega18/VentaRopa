@@ -60,12 +60,12 @@ namespace DA
         }
 
 
-        public List<DetallesOrden> obtenerPorFecha(DateOnly fecha)
+        public List<DetallesOrden> obtenerPorRangoFechas(DateOnly fechaInicio, DateOnly fechaFin)
         {
             try
             {
                 return _dbContext.DetallesOrdens
-                                 .Where(d => d.Orden.OrdenFecha == fecha)
+                                 .Where(d => d.Orden.OrdenFecha >= fechaInicio && d.Orden.OrdenFecha <= fechaFin)
                                  .Include(d => d.Producto)
                                  .Include(d => d.Orden)
                                      .ThenInclude(o => o.Cliente)
@@ -73,9 +73,10 @@ namespace DA
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener los detalles de la orden por fecha: " + ex.Message);
+                throw new Exception("Error al obtener los detalles de la orden por rango de fechas: " + ex.Message);
             }
         }
+
 
         public List<DetallesOrden> obtenerPorCorreo(string correoUsuario)
         {
@@ -94,6 +95,40 @@ namespace DA
             }
         }
 
+        public List<DetallesOrden> obtenerPorClienteId(int clienteId)
+        {
+            try
+            {
+                return _dbContext.DetallesOrdens
+                                 .Where(d => d.Orden.ClienteId == clienteId)
+                                 .Include(d => d.Producto)
+                                 .Include(d => d.Orden)
+                                     .ThenInclude(o => o.Cliente)
+                                 .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los detalles de la orden por ID de cliente: " + ex.Message);
+            }
+        }
+
+
+        public List<DetallesOrden> obtenerPorNombreCliente(string nombreCliente)
+        {
+            try
+            {
+                return _dbContext.DetallesOrdens
+                                 .Where(d => d.Orden.Cliente.Nombre.Contains(nombreCliente) || d.Orden.Cliente.Apellido.Contains(nombreCliente))
+                                 .Include(d => d.Producto)
+                                 .Include(d => d.Orden)
+                                     .ThenInclude(o => o.Cliente)
+                                 .ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los detalles de la orden por nombre de cliente: " + ex.Message);
+            }
+        }
 
         public DetallesOrden obtenerPorProducto(String producto)
         {

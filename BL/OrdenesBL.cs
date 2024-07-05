@@ -106,5 +106,27 @@ namespace BL
         }
 
 
+        public void Actualizar(Orden orden)
+        {
+            try {
+                ordenesDA.Actualizar(orden);
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public Orden ObtenerPorId(int id)
+        {
+            try
+            {
+                return ordenesDA.ObtenerPorId(id);
+            } catch(Exception ex) { 
+                throw new Exception(ex.Message);
+            }
+            
+        }
+
     }
 }
