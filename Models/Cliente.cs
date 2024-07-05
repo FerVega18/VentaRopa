@@ -1,27 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models;
 
 public partial class Cliente
 {
+    [Required]
     public int ClienteId { get; set; }
-
+    [Required]
     public string? NombreUsuario { get; set; }
-
+    [Required]
     public string? Nombre { get; set; }
-
+    [Required]
     public string? Apellido { get; set; }
-
+    [Required]
     public DateOnly? Nacimiento { get; set; }
-
+    [Required]
     public string? Pais { get; set; }
 
-    public virtual ICollection<Direccion> Direccions { get; set; } = new List<Direccion>();
+    public virtual ICollection<Direccion> Direccions { get; set; } 
 
     public virtual Usuario? NombreUsuarioNavigation { get; set; }
 
-    public virtual ICollection<Orden> Ordens { get; set; } = new List<Orden>();
+    public virtual ICollection<Orden> Ordens { get; set; } 
 
-    public virtual ICollection<Tarjeta> Tarjeta { get; set; } = new List<Tarjeta>();
+    public virtual ICollection<Tarjeta> Tarjeta { get; set; } 
 }

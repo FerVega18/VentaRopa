@@ -42,6 +42,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Usuarios/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Expiración de la cookie de autenticación
+        options.SlidingExpiration = true; // Renovar la cookie en cada solicitud
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
 // Configurar políticas de autorización
@@ -72,6 +77,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 
 // Añadir middleware de autenticación y autorización
 app.UseAuthentication();

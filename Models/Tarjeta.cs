@@ -17,5 +17,5 @@ public partial class Tarjeta
 
     public virtual Cliente? Cliente { get; set; }
 
-    public virtual ICollection<TokenPago> TokenPagos { get; set; } = new List<TokenPago>();
+    public virtual ICollection<TokenPago> TokenPagos { get; set; }
 }

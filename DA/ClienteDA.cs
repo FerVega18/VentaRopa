@@ -23,8 +23,9 @@ namespace DA
             try
             {
 
-                _dbContext.Clientes.Add(cliente);
+               _dbContext.Clientes.Add(cliente);
                 _dbContext.SaveChanges();
+
                 return cliente.ClienteId;
             }
             catch (Exception ex)
