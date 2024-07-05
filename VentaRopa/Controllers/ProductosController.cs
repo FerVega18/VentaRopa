@@ -27,6 +27,7 @@ namespace VentaRopa.Controllers
             _clienteBL = clienteBL;
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpGet]
         public async Task<IActionResult> Agregar()
         {
@@ -34,6 +35,7 @@ namespace VentaRopa.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Agregar([Bind("Descripcion,CategoriaId,Talla,Marca,Precio,Stock")] Producto producto, IFormFile imageFile)
         {
@@ -151,7 +153,7 @@ namespace VentaRopa.Controllers
         }
 
 
-
+        [Authorize(Roles = "Administrador")]
         [HttpGet]
         public async Task<IActionResult> Editar(int id)
         {
@@ -164,6 +166,7 @@ namespace VentaRopa.Controllers
             return View(producto);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Editar(int id, [Bind("ProductoId,Descripcion,CategoriaId,Talla,Marca,Precio,Stock,Imagen")] Producto producto, IFormFile imageFile)
         {
@@ -213,6 +216,7 @@ namespace VentaRopa.Controllers
             return View(producto);
         }
 
+        [Authorize(Roles = "Administrador")]
         [HttpPost]
         public async Task<IActionResult> Eliminar(int id)
         {
@@ -226,7 +230,7 @@ namespace VentaRopa.Controllers
             return RedirectToAction(nameof(Gestionar));
         }
 
-
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Gestionar(string searchQuery)
         {
             try
@@ -250,6 +254,8 @@ namespace VentaRopa.Controllers
                 return BadRequest("Error al gestionar productos: " + ex.Message);
             }
         }
+
+
         [AllowAnonymous]
         public IActionResult AgregarAlCarrito(int productoId, int cantidad = 1)
         {

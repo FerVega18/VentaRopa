@@ -49,8 +49,12 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrador"));
     options.AddPolicy("RequireSalesRole", policy => policy.RequireRole("Ventas"));
-    options.AddPolicy("AllowAnonymous", policy => policy.RequireAssertion(context => true));
+    options.AddPolicy("RequireClientRole", policy => policy.RequireAssertion(context =>
+    {
+        return context.User.IsInRole("Cliente") || !context.User.Identity.IsAuthenticated;
+    }));
 });
+
 
 // Agregar controladores con vistas
 builder.Services.AddControllersWithViews();

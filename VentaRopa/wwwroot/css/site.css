@@ -1,3 +1,7 @@
+.navbar-light-blue {
+background-color: #add8e6;
+}
+
 html {
   font-size: 14px;
 }
@@ -20,3 +24,5 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+

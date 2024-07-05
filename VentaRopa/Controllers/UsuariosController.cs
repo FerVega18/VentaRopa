@@ -137,24 +137,50 @@ namespace VentaRopa.Controllers
             }
 
             var usuario = _usuarioBL.ObtenerUsuario(nombreUsuario, contraseña);
-            if (usuario != null)
+            if (usuario == null)
             {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, usuario.NombreUsuario),
-                    new Claim(ClaimTypes.Role, usuario.Rol.Descripcion)
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-                return Redirect(returnUrl ?? "/");
+                ViewBag.Error = "Usuario o contraseña incorrectos.";
+                ViewBag.ReturnUrl = returnUrl;
+                return View();
             }
 
-            ViewBag.Error = "Usuario o contraseña incorrectos.";
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, usuario.NombreUsuario),
+        new Claim(ClaimTypes.Role, usuario.Rol.Descripcion)
+    };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+            if (usuario.RolId == 3) // Si el rol es Administrador (id = 3)
+            {
+                return RedirectToAction("Gestionar", "Productos");
+            }
+
+            if (usuario.RolId == 2) // Si el rol es Ventas (id = 2)
+            {
+                return RedirectToAction("Index", "Orden");
+            }
+
+            if (usuario.RolId == 1) // Si el rol es Cliente (id = 1)
+            {
+                return RedirectToAction("Login", "Usuarios");
+            }
+
+            // Si llega aquí, el usuario no tiene un rol reconocido
+            ViewBag.Error = "No tiene permisos para acceder a esta área.";
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Lista", "Productos"); 
+        }
+
     }
 }
 
