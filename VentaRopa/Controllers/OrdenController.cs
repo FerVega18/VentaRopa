@@ -1,5 +1,6 @@
 ﻿using BL;
 using DA;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -152,7 +153,7 @@ public class OrdenController : Controller
 
 
 
-
+    [Authorize(Roles = "Ventas")]
     public async Task<IActionResult> Index()
     {
         var ordenesSinDespachar = _detallesOrdenBL.listarOrdenados().Where(o => o.Orden.EstadoId == 3).ToList();
@@ -162,6 +163,8 @@ public class OrdenController : Controller
         return View(model);
     }
 
+
+    [Authorize(Roles = "Ventas")]
     [HttpGet]
     public IActionResult Buscar(string criterioBusqueda, int? numeroOrden, string correoUsuario, DateOnly? fechaInicio, DateOnly? fechaFin, string nombreCliente, int? clienteId)
     {
@@ -198,6 +201,7 @@ public class OrdenController : Controller
         return View("Index", model);
     }
 
+    [Authorize(Roles = "Ventas")]
     [HttpPost]
     public IActionResult Despachar(int ordenId)
     {

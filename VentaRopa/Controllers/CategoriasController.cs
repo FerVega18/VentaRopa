@@ -4,9 +4,12 @@ using Models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using BL;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace VentaRopa.Controllers
 {
+    [Authorize(Roles = "Administrador")]
     public class CategoriasController : Controller
     {
         private readonly CategoriasBL _categoriasBL;
