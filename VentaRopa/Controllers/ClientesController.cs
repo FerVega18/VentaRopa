@@ -139,9 +139,15 @@ namespace VentaRopa.Controllers
             }
         }
 
-        public IActionResult EditarDireccion(int clienteId)
+        // GET: Direcciones/EditarDireccion
+        public IActionResult EditarDireccion(int direccionID)
         {
-            var direccion = _direccionesBL.obtenerDireccionPorCliente(clienteId);
+            var direccion = _direccionesBL.ObtenerDireccionPorId(direccionID);
+            if (direccion == null)
+            {
+                return NotFound();
+            }
+
             return View(direccion);
         }
 
@@ -150,18 +156,24 @@ namespace VentaRopa.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditarDireccion(Direccion direccion)
         {
-            if (ModelState.IsValid)
-            {
+           
+            
                 try
                 {
-                    _direccionesBL.ActualizarDireccion(direccion);
+                    var direccionActual = _direccionesBL.ObtenerDireccionPorId(direccion.DireccionId);
+                    if (direccionActual == null)
+                    {
+                        return NotFound();
+                    }
+                    direccionActual.Descripcion = direccion.Descripcion; // Actualizar solo la descripción
+                    _direccionesBL.ActualizarDireccion(direccionActual);
                     return RedirectToAction("MisDirecciones");
                 }
                 catch (Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, $"Error al actualizar la dirección: {ex.Message}");
                 }
-            }
+            
 
             // Si llegamos aquí, significa que hubo un error en el modelo o una excepción
             return View(direccion);

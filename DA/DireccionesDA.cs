@@ -16,16 +16,14 @@ namespace DA
         {
             _dbContext = dbContext;
         }
-        public int EditarDireccion(Direccion direccion, int clienteID)
+        public int EditarDireccion(Direccion direccion, int direccionId)
         {
             try
             {
 
-
-                Direccion direccionPorActualizar = obtenerDireccionPorCliente(clienteID);
-                direccionPorActualizar.DireccionId = direccion.DireccionId;
+                
+                Direccion direccionPorActualizar = _dbContext.Direccions.FirstOrDefault(d => d.DireccionId == direccionId);
                 direccionPorActualizar.Descripcion = direccion.Descripcion;
-                direccionPorActualizar.ClienteId = direccion.ClienteId;
                 _dbContext.Direccions.Update(direccionPorActualizar);
                 _dbContext.SaveChanges();
                 return direccion.DireccionId;
@@ -37,6 +35,19 @@ namespace DA
                 throw new Exception(ex.Message);
             }
         }
+
+        public Direccion ObtenerDireccionPorId(int direccionID)
+        {
+            try
+            {
+                return _dbContext.Direccions.FirstOrDefault(d => d.DireccionId == direccionID);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        
 
         public int EliminarDireccionPorIdCliente(int clienteID)
         {

@@ -61,6 +61,19 @@ namespace BL
             }
         }
 
+        public Direccion ObtenerDireccionPorId(int direccionID)
+        {
+            try
+            {
+                return direccionesDA.ObtenerDireccionPorId(direccionID);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
         public List<Direccion> obtenerDireccionesPorCliente(int clienteId)
         {
             try
@@ -89,6 +102,8 @@ namespace BL
                 throw new Exception(ex.Message);
             }
         }
+
+
 
         public void ActualizarDireccion(Direccion direccion)
         {
