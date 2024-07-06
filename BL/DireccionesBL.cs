@@ -36,11 +36,11 @@ namespace BL
             }
         }
 
-        public int EliminarDireccion(int clienteID)
+        public int EliminarDireccion(int direccion)
         {
             try
             {
-                return direccionesDA.EliminarDireccion(clienteID);
+                return direccionesDA.EliminarDireccion(direccion);
             }
             catch (Exception ex)
             {
@@ -61,7 +61,32 @@ namespace BL
             }
         }
 
-        public int AgregarDireccion(Direccion direccion, int cliente)
+        public Direccion ObtenerDireccionPorId(int direccionID)
+        {
+            try
+            {
+                return direccionesDA.ObtenerDireccionPorId(direccionID);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+        public List<Direccion> obtenerDireccionesPorCliente(int clienteId)
+        {
+            try
+            {
+                return direccionesDA.obtenerDireccionesPorCliente(clienteId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public int AgregarDireccion(Direccion direccion, int cliente, bool clienteNuevo)
         {
             try
             {
@@ -74,6 +99,8 @@ namespace BL
                 throw new Exception(ex.Message);
             }
         }
+
+
 
         public void ActualizarDireccion(Direccion direccion)
         {

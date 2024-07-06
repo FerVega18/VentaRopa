@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Models;
 
+
 public partial class Direccion
 {
     public int DireccionId { get; set; }

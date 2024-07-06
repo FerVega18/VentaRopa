@@ -1,0 +1,24 @@
+﻿@model Models.Direccion
+
+@{
+    ViewData["Title"] = "Editar Dirección";
+}
+
+<h1>Editar Dirección</h1>
+
+<form asp-action="EditarDireccion" method="post">
+    <input type="hidden" asp-for="DireccionId" />
+    <div class="form-group">
+        <label asp-for="Descripcion">Descripción:</label>
+        <input asp-for="Descripcion" class="form-control" />
+        <span asp-validation-for="Descripcion" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a asp-action="MisDirecciones" class="btn btn-secondary">Cancelar</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

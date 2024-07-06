@@ -20,7 +20,7 @@ public class UsuarioDA
             }
 
             // Asignar el rol 'Cliente'
-            var rolCliente = _dbContext.Rols.FirstOrDefault(r => r.Descripcion == "Cliente");
+            var rolCliente = _dbContext.Rols.FirstOrDefault(r => r.RolId == 1);
             if (rolCliente == null)
             {
                 throw new Exception("El rol 'Cliente' no existe en la base de datos.");
