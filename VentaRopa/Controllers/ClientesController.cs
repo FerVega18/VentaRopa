@@ -96,18 +96,20 @@ namespace VentaRopa.Controllers
         }
 
 
-
+        [HttpGet]
         public IActionResult MisDirecciones()
         {
             var nombreUsuario = User.Identity.Name;
-            var cliente = _clienteBL.obtenerClientePorUsuario(nombreUsuario); 
+            var cliente = _clienteBL.obtenerClientePorUsuario(nombreUsuario);
             if (cliente == null)
             {
                 return NotFound();
             }
-            var direccion = _direccionesBL.obtenerDireccionPorCliente(cliente.ClienteId);
-            return View(direccion);
+            var direcciones = _direccionesBL.obtenerDireccionesPorCliente(cliente.ClienteId);
+            return View(direcciones);
+
         }
+
 
         public IActionResult AgregarDireccion()
         {
@@ -143,33 +145,40 @@ namespace VentaRopa.Controllers
             return View(direccion);
         }
 
+        // POST: Direcciones/EditarDireccion
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult EditarDireccion(Direccion direccion)
         {
-            try
+            if (ModelState.IsValid)
             {
-                _direccionesBL.ActualizarDireccion(direccion);
-                return RedirectToAction("MisDirecciones");
+                try
+                {
+                    _direccionesBL.ActualizarDireccion(direccion);
+                    return RedirectToAction("MisDirecciones");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Error al actualizar la dirección: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Error al actualizar la dirección: {ex.Message}");
-                return View(direccion);
-            }
+
+            // Si llegamos aquí, significa que hubo un error en el modelo o una excepción
+            return View(direccion);
         }
 
-        public IActionResult EliminarDireccion(int clienteId)
+
+        public IActionResult EliminarDireccion(int direccionId)
         {
             try
             {
-                _direccionesBL.EliminarDireccion(clienteId);
+                _direccionesBL.EliminarDireccion(direccionId);
                 return RedirectToAction("MisDirecciones");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"Error al eliminar la dirección: {ex.Message}");
-                var direccion = _direccionesBL.obtenerDireccionPorCliente(clienteId);
+                var direccion = _direccionesBL.obtenerDireccionPorCliente(direccionId);
                 return View("MisDirecciones", direccion);
             }
         }

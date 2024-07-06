@@ -11,7 +11,7 @@ public partial class Usuario
 
     public int? RolId { get; set; }
 
-    public virtual ICollection<Cliente> Clientes { get; set; } 
+    public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
 
     public virtual Rol? Rol { get; set; }
 }

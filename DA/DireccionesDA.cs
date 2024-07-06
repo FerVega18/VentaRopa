@@ -38,7 +38,7 @@ namespace DA
             }
         }
 
-        public int EliminarDireccion(int clienteID)
+        public int EliminarDireccionPorIdCliente(int clienteID)
         {
             try
             {
@@ -55,6 +55,25 @@ namespace DA
             }
         }
 
+        public int EliminarDireccion(int direccion)
+        {
+            try
+            {
+                Direccion direccionPorEliminar = _dbContext.Direccions.FirstOrDefault(d => d.DireccionId == direccion); ;
+                _dbContext.Direccions.Remove(direccionPorEliminar);
+                _dbContext.SaveChanges();
+                return direccionPorEliminar.DireccionId;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+
         public Direccion obtenerDireccionPorCliente(int clienteID)
         {
             try
@@ -66,6 +85,20 @@ namespace DA
                 throw new Exception(ex.Message);
             }
         }
+
+        public List<Direccion> obtenerDireccionesPorCliente(int clienteId)
+        {
+            try
+            {
+                return _dbContext.Direccions.Where(d => d.ClienteId == clienteId).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+    
+
 
         public int AgregarDireccion(Direccion direccion)
         {
