@@ -12,16 +12,19 @@ public class CarritoController : Controller
     private readonly ProductosBL _productosBL;
     private readonly ClienteBL _clienteBL;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ICarritoService _carritoService;
 
-    public CarritoController(ProductosBL productosBL, ClienteBL clienteBL, IHttpContextAccessor httpContextAccessor)
+    public CarritoController(ProductosBL productosBL, ClienteBL clienteBL, IHttpContextAccessor httpContextAccessor, ICarritoService carritoService)
     {
         _productosBL = productosBL;
         _clienteBL = clienteBL;
         _httpContextAccessor = httpContextAccessor;
+        _carritoService = carritoService;
     }
 
     public async Task<IActionResult> Index()
     {
+        ViewBag.CarritoCantidad = _carritoService.ObtenerCantidadProductos();
         var session = _httpContextAccessor.HttpContext.Session;
         var carrito = session.GetObjectFromJson<Dictionary<int, int>>("Carrito") ?? new Dictionary<int, int>();
 
@@ -100,6 +103,7 @@ public class CarritoController : Controller
     [HttpPost]
     public async Task<IActionResult> Compra(List<CarritoProducto> productos)
     {
+        ViewBag.CarritoCantidad = _carritoService.ObtenerCantidadProductos();
         if (productos == null || productos.Count == 0)
         {
             TempData["CarritoVacio"] = "Tu carrito de compras está vacío.";

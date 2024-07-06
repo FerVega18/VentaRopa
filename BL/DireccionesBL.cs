@@ -77,5 +77,17 @@ namespace BL
                 throw new Exception(ex.Message);
             }
         }
+
+        public void ActualizarDireccion(Direccion direccion)
+        {
+            try {
+                direccionesDA.Actualizar(direccion);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            
+        }
     }
 }

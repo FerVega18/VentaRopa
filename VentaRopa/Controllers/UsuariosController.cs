@@ -59,6 +59,7 @@ namespace VentaRopa.Controllers
 
         // POST: Usuarios/Login
         // POST: Usuarios/Login
+        // POST: Usuarios/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string nombreUsuario, string contraseña)
@@ -78,7 +79,7 @@ namespace VentaRopa.Controllers
                     var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, usuario.NombreUsuario),
-                new Claim(ClaimTypes.Role, usuario.Rol.Descripcion) // Asegúrate de que el rol sea "Cliente"
+                new Claim(ClaimTypes.Role, usuario.Rol.Descripcion), // Asegúrate de que el rol sea "Cliente"
             };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -97,6 +98,7 @@ namespace VentaRopa.Controllers
             }
             return View();
         }
+
 
 
 
@@ -177,6 +179,9 @@ namespace VentaRopa.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Lista", "Productos"); 
         }
+
+
+
 
     }
 }

@@ -18,13 +18,15 @@ namespace VentaRopa.Controllers
         private CategoriasBL _categoriasBL;
         private IHttpContextAccessor _httpContextAccessor;
         private ClienteBL _clienteBL;
+        private readonly ICarritoService _carritoService;
 
-        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL, IHttpContextAccessor httpContextAccessor, ClienteBL clienteBL)
+        public ProductosController(ProductosBL productosBL, CategoriasBL categoriasBL, IHttpContextAccessor httpContextAccessor, ClienteBL clienteBL, ICarritoService carritoService)
         {
             _productosBL = productosBL;
             _categoriasBL = categoriasBL;
             _httpContextAccessor = httpContextAccessor;
             _clienteBL = clienteBL;
+            _carritoService = carritoService;
         }
 
         [Authorize(Roles = "Administrador")]
@@ -71,6 +73,7 @@ namespace VentaRopa.Controllers
 
         public async Task<IActionResult> Lista(string searchQuery, string sortOrder, string filter, int? categoria, string marca)
         {
+            ViewBag.CarritoCantidad = _carritoService.ObtenerCantidadProductos();
             // Obtener todos los productos
             var productos = await _productosBL.ObtenerTodos();
 
@@ -142,6 +145,7 @@ namespace VentaRopa.Controllers
         //Método para mostrar detalles de un producto
         public async Task<IActionResult> Details(int id)
         {
+            ViewBag.CarritoCantidad = _carritoService.ObtenerCantidadProductos();
             var producto =  _productosBL.obtenerPorId(id);
 
             if (producto == null)

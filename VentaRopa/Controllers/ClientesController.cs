@@ -1,4 +1,5 @@
 ﻿using BL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using System;
@@ -93,6 +94,85 @@ namespace VentaRopa.Controllers
         }
 
 
+
+        public IActionResult MisDirecciones()
+        {
+            var nombreUsuario = User.Identity.Name;
+            var cliente = _clienteBL.obtenerClientePorUsuario(nombreUsuario); 
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+            var direccion = _direccionesBL.obtenerDireccionPorCliente(cliente.ClienteId);
+            return View(direccion);
+        }
+
+        public IActionResult AgregarDireccion()
+        {
+            return View(new Direccion());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AgregarDireccion(Direccion direccion)
+        {
+            var nombreUsuario = User.Identity.Name;
+            var cliente = _clienteBL.obtenerClientePorUsuario(nombreUsuario);
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                _direccionesBL.AgregarDireccion(direccion, cliente.ClienteId, false);
+                return RedirectToAction("MisDirecciones");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error al agregar la dirección: {ex.Message}");
+                return View(direccion);
+            }
+        }
+
+        public IActionResult EditarDireccion(int clienteId)
+        {
+            var direccion = _direccionesBL.obtenerDireccionPorCliente(clienteId);
+            return View(direccion);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditarDireccion(Direccion direccion)
+        {
+            try
+            {
+                _direccionesBL.ActualizarDireccion(direccion);
+                return RedirectToAction("MisDirecciones");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error al actualizar la dirección: {ex.Message}");
+                return View(direccion);
+            }
+        }
+
+        public IActionResult EliminarDireccion(int clienteId)
+        {
+            try
+            {
+                _direccionesBL.EliminarDireccion(clienteId);
+                return RedirectToAction("MisDirecciones");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error al eliminar la dirección: {ex.Message}");
+                var direccion = _direccionesBL.obtenerDireccionPorCliente(clienteId);
+                return View("MisDirecciones", direccion);
+            }
+        }
     }
+    
+
 }
 

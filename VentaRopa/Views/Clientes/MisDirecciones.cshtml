@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Models.Direccion>
+
+@{
+    ViewData["Title"] = "Mis Direcciones";
+}
+
+<h1>Mis Direcciones</h1>
+
+<p>@User.Identity.Name</p> <!-- Muestra el nombre del usuario -->
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var direccion in Model)
+            {
+                <tr>
+                    <td>@direccion.Descripcion</td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="EditarDireccion" asp-route-direccionId="@direccion.DireccionId">Editar</a>
+                        <a class="btn btn-danger" asp-action="EliminarDireccion" asp-route-direccionId="@direccion.DireccionId">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No se encontró ninguna dirección.</p>
+}
+
+<a class="btn btn-primary" asp-action="AgregarDireccion">Agregar Nueva Dirección</a>

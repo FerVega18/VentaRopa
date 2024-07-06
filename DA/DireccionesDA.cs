@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,6 +76,18 @@ namespace DA
                 return direccion.DireccionId;
             }
             catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public void Actualizar(Direccion direccion)
+        {
+            try
+            {
+                _dbContext.Entry(direccion).State = EntityState.Modified;
+                _dbContext.SaveChanges();
+            }catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }

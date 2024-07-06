@@ -1,0 +1,12 @@
+﻿@model Models.Direccion
+
+<h1>Agregar Dirección</h1>
+
+<form asp-action="AgregarDireccion" asp-route-clienteId="@ViewData["ClienteId"]" asp-route-clienteNuevo="@ViewData["ClienteNuevo"]" method="post">
+    <div class="form-group">
+        <label asp-for="Descripcion">Descripción:</label>
+        <input asp-for="Descripcion" class="form-control" />
+        <input type="hidden" asp-for="ClienteId" />
+    </div>
+    <button type="submit" class="btn btn-primary">Agregar Dirección</button>
+</form>
