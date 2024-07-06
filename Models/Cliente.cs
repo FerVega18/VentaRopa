@@ -6,17 +6,17 @@ namespace Models;
 
 public partial class Cliente
 {
-    [Required]
+    
     public int ClienteId { get; set; }
-    [Required]
+   
     public string? NombreUsuario { get; set; }
-    [Required]
+    
     public string? Nombre { get; set; }
-    [Required]
+    
     public string? Apellido { get; set; }
-    [Required]
+  
     public DateOnly? Nacimiento { get; set; }
-    [Required]
+    
     public string? Pais { get; set; }
 
     public virtual ICollection<Direccion> Direccions { get; set; } 

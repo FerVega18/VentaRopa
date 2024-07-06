@@ -22,8 +22,8 @@ namespace DA
         {
             try
             {
-
-               _dbContext.Clientes.Add(cliente);
+                var rolCliente = _dbContext.Rols.FirstOrDefault(r => r.RolId == 1);
+                _dbContext.Clientes.Add(cliente);
                 _dbContext.SaveChanges();
 
                 return cliente.ClienteId;
@@ -95,7 +95,15 @@ namespace DA
             }
         }
 
-
+        public int AsociarDirecciones(Direccion direccion, Cliente cliente) {
+            try { 
+              cliente.Direccions.Add(direccion);
+                _dbContext.SaveChanges();
+                return cliente.Direccions.Count;
+            } catch (Exception ex) {
+                throw new Exception( ex.Message);
+            }
+        }
 
 
     }

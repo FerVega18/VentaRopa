@@ -90,9 +90,6 @@ namespace BL
         {
             try
             {
-                if (clienteNuevo) {
-                    return direccionesDA.AgregarDireccion(direccion);
-                }
             
                direccion.ClienteId = clienteDA.ObtenerPorId(cliente).ClienteId;
             return direccionesDA.AgregarDireccion(direccion);
