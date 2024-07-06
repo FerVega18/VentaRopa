@@ -19,10 +19,12 @@ namespace BL
             tarjetasDA = new TarjetasDA(context);
         }
 
-        public int Agregar(Tarjeta tarjeta)
+        public int Agregar(Tarjeta tarjeta, Cliente cliente)
         {
             try
             {
+                tarjeta.ClienteId = cliente.ClienteId;
+                tarjeta.Cliente = cliente;
                 return tarjetasDA.Agregar(tarjeta);
             }
             catch (Exception ex)

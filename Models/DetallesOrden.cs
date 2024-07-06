@@ -13,7 +13,7 @@ public partial class DetallesOrden
 
     public int? Cantidad { get; set; }
 
-    public virtual Orden Orden { get; set; } = null!;
+    public virtual Orden Orden { get; set; } 
 
-    public virtual Producto Producto { get; set; } = null!;
+    public virtual Producto Producto { get; set; } 
 }

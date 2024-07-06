@@ -19,7 +19,7 @@ public partial class Orden
 
     public virtual Cliente? Cliente { get; set; }
 
-    public virtual ICollection<DetallesOrden> DetallesOrdens { get; set; } = new List<DetallesOrden>();
+    public virtual ICollection<DetallesOrden> DetallesOrdens { get; set; }
 
     public virtual EstadoOrden? Estado { get; set; }
 }

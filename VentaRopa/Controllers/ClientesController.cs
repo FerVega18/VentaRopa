@@ -13,6 +13,7 @@ namespace VentaRopa.Controllers
         private readonly UsuarioBL _usuarioBL;
         private readonly TarjetasBL _tarjetasBL; 
         private DireccionesBL _direccionesBL;
+        private static bool clienteNuevo = false; //Variable estática para saber si el cliente que se va a crear es nuevo
 
         public ClientesController(ClienteBL clienteBL, UsuarioBL usuarioBL, TarjetasBL tarjetasBL,DireccionesBL direccionesBL)
         {
@@ -25,6 +26,7 @@ namespace VentaRopa.Controllers
         // GET: Clientes/Crear
         public IActionResult Crear()
         {
+            clienteNuevo = true; //Indicamos que es un cliente nuevo
             return View();
         }
 
@@ -64,24 +66,24 @@ namespace VentaRopa.Controllers
                         NombreUsuarioNavigation = usuario
                     };
                     _clienteBL.CrearCliente(cliente, contraseña, false);
-                    if (_clienteBL.obtenerClientePorUsuario(usuario.NombreUsuario) != null)
-                    {
-                        ModelState.AddModelError(string.Empty, "Ya existe un cliente asociado a ese correo");
-                        return View();
-                    }
+                    //if (_clienteBL.obtenerClientePorUsuario(usuario.NombreUsuario) != null)
+                    //{
+                    //    ModelState.AddModelError(string.Empty, "Ya existe un cliente asociado a ese correo");
+                    //    return View();
+                    //}
 
                     // Agregar direcciones
                     foreach (var direccionDescripcion in direcciones)
                     {
-                        var direccion = new Direccion { Descripcion = direccionDescripcion, ClienteId = clienteId };
-                        _direccionesBL.AgregarDireccion(direccion, clienteId, true);
+                        var direccion = new Direccion { Descripcion = direccionDescripcion, ClienteId = clienteId, Cliente = cliente };
+                        _direccionesBL.AgregarDireccion(direccion, clienteId);
                     }
 
                     // Agregar tarjetas
                     for (int i = 0; i < tarjetas.Count; i++)
                     {
                         var tarjeta = new Tarjeta { Numero = tarjetas[i], Cvc = cvcTarjetas[i], FechaVencimiento = fechaVencimientoTarjetas[i], ClienteId = cliente.ClienteId };
-                        _tarjetasBL.Agregar(tarjeta);
+                        _tarjetasBL.Agregar(tarjeta,cliente);
                     }
 
                     
@@ -127,7 +129,7 @@ namespace VentaRopa.Controllers
 
             try
             {
-                _direccionesBL.AgregarDireccion(direccion, cliente.ClienteId, false);
+                _direccionesBL.AgregarDireccion(direccion, cliente.ClienteId);
                 return RedirectToAction("MisDirecciones");
             }
             catch (Exception ex)

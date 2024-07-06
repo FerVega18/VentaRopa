@@ -108,6 +108,7 @@ public class OrdenController : Controller
                 NombreD = nombre,
                 DireccionD = direccionEntrega.Descripcion,
                 EstadoId = 3,
+                Estado = _ordenesBL.obtenerEstado(3)
             };
         }
         else
@@ -133,7 +134,7 @@ public class OrdenController : Controller
                     ClienteId = cedula,
                     Descripcion = direccion,
                 };
-                _direccionesBL.AgregarDireccion(direccionCliente, cedula, true);
+                _direccionesBL.AgregarDireccion(direccionCliente, cedula);
 
                 orden = new Orden
                 {
@@ -152,7 +153,7 @@ public class OrdenController : Controller
                     Cvc = cvc,
                     FechaVencimiento = fechaVencimiento,
                 };
-                _tarjetasBL.Agregar(tarjetaCliente);
+                _tarjetasBL.Agregar(tarjetaCliente,cliente);
                 _ordenesBL.Agregar(orden);
             }
         }
