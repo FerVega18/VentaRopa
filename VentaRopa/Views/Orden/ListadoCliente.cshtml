@@ -1,0 +1,82 @@
+﻿@model List<Models.DetallesOrden>
+
+@{
+    bool? usuarioAutenticado = ViewBag.UsuarioAutenticado as bool?;
+    ViewData["Title"] = "Órdenes de cliente";
+}
+
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+
+<h1>Órdenes</h1>
+
+@if (usuarioAutenticado == true)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número de orden</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in Model)
+            {
+                <tr>
+                    <td>@detalle.OrdenId</td>
+                    <td>@detalle.Producto?.Descripcion</td>
+                    <td>@detalle.Cantidad</td>
+                    <td>@detalle.Precio</td>
+                    <td>@((detalle.Cantidad ?? 0) * (detalle.Precio ?? 0))</td>
+                    <td>@detalle.Orden.Estado.Descripcion</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <form asp-action="BuscarOrden" method="get">
+        <div class="form-group">
+            <input type="number" class="form-control" id="numeroOrden" placeholder="Ingrese el número de orden" name="numeroOrden">
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </form>
+
+    
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número de orden</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model != null)
+            {
+                @foreach (var detalle in Model)
+                {
+                    <tr>
+                        <td>@detalle.OrdenId</td>
+                        <td>@detalle.Producto?.Descripcion</td>
+                        <td>@detalle.Cantidad</td>
+                        <td>@detalle.Precio</td>
+                        <td>@(detalle.Cantidad * detalle.Precio)</td>
+                        <td>@detalle.Orden.Estado.Descripcion</td>
+                    </tr>
+                }
+            }
+            
+        </tbody>
+    </table>
+}

@@ -50,10 +50,7 @@ namespace VentaRopa.Controllers
                         ModelState.AddModelError(string.Empty, "El cliente ya existe.");
                         return View();
                     }
-                    if (_clienteBL.obtenerClientePorUsuario(nombreUsuario) != null) {
-                        ModelState.AddModelError(string.Empty, "Ya existe un cliente asociado a ese correo");
-                        return View();
-                    }
+                   
                     
                     // Crear el objeto Cliente
                     var cliente = new Cliente
@@ -67,6 +64,11 @@ namespace VentaRopa.Controllers
                         NombreUsuarioNavigation = usuario
                     };
                     _clienteBL.CrearCliente(cliente, contraseña, false);
+                    if (_clienteBL.obtenerClientePorUsuario(usuario.NombreUsuario) != null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe un cliente asociado a ese correo");
+                        return View();
+                    }
 
                     // Agregar direcciones
                     foreach (var direccionDescripcion in direcciones)

@@ -70,7 +70,7 @@ namespace VentaRopa.Controllers
             return View(producto);
         }
 
-
+        
         public async Task<IActionResult> Lista(string searchQuery, string sortOrder, string filter, int? categoria, string marca)
         {
             ViewBag.CarritoCantidad = _carritoService.ObtenerCantidadProductos();
