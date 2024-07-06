@@ -35,7 +35,7 @@ builder.Services.AddScoped<TarjetasBL>();
 builder.Services.AddScoped<OrdenesBL>();
 builder.Services.AddScoped<DetallesOrdenBL>();
 builder.Services.AddScoped<DetallesOrdenDA>();
-
+builder.Services.AddScoped<ICarritoService, CarritoService>();
 
 // Configurar autenticación con cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

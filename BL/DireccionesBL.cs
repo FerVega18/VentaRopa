@@ -86,7 +86,7 @@ namespace BL
             }
         }
 
-        public int AgregarDireccion(Direccion direccion, int cliente, bool clienteNuevo)
+        public int AgregarDireccion(Direccion direccion, int cliente)
         {
             try
             {

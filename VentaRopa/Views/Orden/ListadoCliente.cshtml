@@ -17,6 +17,7 @@
         <thead>
             <tr>
                 <th>Número de orden</th>
+                <th>Fecha </th>
                 <th>Producto</th>
                 <th>Cantidad</th>
                 <th>Precio</th>
@@ -29,11 +30,12 @@
             {
                 <tr>
                     <td>@detalle.OrdenId</td>
+                    <td>@detalle.Orden.OrdenFecha.Value</td>
                     <td>@detalle.Producto?.Descripcion</td>
                     <td>@detalle.Cantidad</td>
                     <td>@detalle.Precio</td>
                     <td>@((detalle.Cantidad ?? 0) * (detalle.Precio ?? 0))</td>
-                    <td>@detalle.Orden.Estado.Descripcion</td>
+                    <td>@detalle.Orden.EstadoId.Value</td>
                 </tr>
             }
         </tbody>
@@ -54,6 +56,7 @@ else
         <thead>
             <tr>
                 <th>Número de orden</th>
+                <th>Fecha </th>
                 <th>Producto</th>
                 <th>Cantidad</th>
                 <th>Precio</th>
@@ -68,11 +71,12 @@ else
                 {
                     <tr>
                         <td>@detalle.OrdenId</td>
+                        <td>@detalle.Orden.OrdenFecha.Value</td>
                         <td>@detalle.Producto?.Descripcion</td>
                         <td>@detalle.Cantidad</td>
                         <td>@detalle.Precio</td>
                         <td>@(detalle.Cantidad * detalle.Precio)</td>
-                        <td>@detalle.Orden.Estado.Descripcion</td>
+                        <td>@detalle.Orden.EstadoId.Value</td>
                     </tr>
                 }
             }
